@@ -11,6 +11,6 @@ object Runner {
 	cfg.width = 480
 	cfg.height = 320
 	
-	new LwjglApplication(new RougelikeGame(), cfg)
+	new LwjglApplication(new RougeLikeGame(), cfg)
   }
 }
