@@ -1,0 +1,12 @@
+
+nethack.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+fly
+  rotate: false
+  xy: 0, 0
+  size: 32, 31
+  orig: 32, 31
+  offset: 0, 0
+  index: -1
