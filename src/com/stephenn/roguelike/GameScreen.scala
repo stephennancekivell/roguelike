@@ -21,7 +21,7 @@ class GameScreen extends Screen with InputProcessor {
     Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1)
 	Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     
-    renderer.render
+    renderer.render(world.grid)
   }
   
   def show(){

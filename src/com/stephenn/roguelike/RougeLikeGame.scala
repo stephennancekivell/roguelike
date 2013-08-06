@@ -17,7 +17,7 @@ class RougeLikeGame extends ApplicationListener {
 	private var texture: Texture = _
 	private var sprite: Sprite = _
   	
-	override def create {		
+	override def create {	
 		val w = Gdx.graphics.getWidth().toFloat;
 		val h = Gdx.graphics.getHeight().toFloat;
 		
@@ -33,7 +33,6 @@ class RougeLikeGame extends ApplicationListener {
 		sprite.setSize(0.9f, 0.9f * sprite.getHeight() / sprite.getWidth());
 		sprite.setOrigin(sprite.getWidth()/2, sprite.getHeight()/2);
 		sprite.setPosition(-sprite.getWidth()/2, -sprite.getHeight()/2);
-		
 	}
 
 	override def dispose() {

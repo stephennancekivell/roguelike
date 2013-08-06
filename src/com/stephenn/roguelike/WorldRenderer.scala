@@ -9,8 +9,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Rectangle
 import model.World
+import com.stephenn.roguelike.model.Tile
 
 class WorldRenderer(world: World) {
   
@@ -22,50 +23,38 @@ class WorldRenderer(world: World) {
   cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0)
   cam.update
   
-  val debugRenderer = new ShapeRenderer()
-  
-  def render {
-    debugRenderer.setProjectionMatrix(cam.combined)
+  def render(tiles: Array[Array[Tile]])  {
+    spriteBatch.begin
+    spriteBatch.setProjectionMatrix(cam.combined)
     
-    drawGrid
-//    drawPlayer
-    drawFlyPlayer
-  }
-  
-  def drawGrid {
-    debugRenderer.begin(ShapeType.Rectangle)
-    debugRenderer.setColor(0, 1, 0, 1)
-    for (x <- 0 to world.grid.length -2){
-      for (y <- 0 to world.grid(x).length -2){
-        debugRenderer.setColor(0, 1, 0, 1)
-        debugRenderer.rect(x*TILE_WIDTH, y*TILE_WIDTH, 1, 1)
+    for (y <- 0 to tiles.length -1){
+      for (x <- 0 to tiles(y).length -1) {
+        drawTile(tiles(y)(x), x, y)
       }
     }
-    debugRenderer.end
+    
+    spriteBatch.end
   }
   
-  def drawPlayer {
-    debugRenderer.begin(ShapeType.Circle)
-    debugRenderer.setColor(Color.BLUE)
-    debugRenderer.circle(world.playerPos._1*TILE_WIDTH, world.playerPos._2*TILE_WIDTH, TILE_WIDTH)
-    debugRenderer.end
+  def drawTile(t: Tile, x: Int, y: Int) {
+    if (t.player.isDefined) {
+      spriteBatch.draw(fly, x, y, 1, 1)
+    } else {
+      if (t.isGround) {
+        spriteBatch.draw(ground1, x, y, 1, 1)
+      }
+    }
   }
   
   var fly: TextureRegion = _
+  var ground1: TextureRegion = _
   val spriteBatch = new SpriteBatch()
   def loadTextures {
     val atlas = new TextureAtlas(Gdx.files.internal("nethack.atlas"))
     fly = atlas.findRegion("fly")
+    ground1 = atlas.findRegion("ground1")
   }
   loadTextures
-  
-  def drawFlyPlayer {
-    spriteBatch.begin
-    spriteBatch.setProjectionMatrix(cam.combined)
-    spriteBatch.draw(fly, world.playerPos._1, world.playerPos._2, 1, 1)
-    
-    spriteBatch.end
-  }
   
   def zoomIn {
     cam.zoom += 0.1f
