@@ -7,7 +7,7 @@ object Runner {
   def main(args: Array[String]) {
     var cfg = new LwjglApplicationConfiguration()
 	cfg.title = "rougelike"
-	cfg.useGL20 = false
+	cfg.useGL20 = true
 	cfg.width = 480
 	cfg.height = 320
 	
