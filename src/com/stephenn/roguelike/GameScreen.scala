@@ -1,10 +1,10 @@
-package com.stephenn.rougelike
+package com.stephenn.roguelike
 
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL10
-import com.stephenn.rougelike.model.World
+import com.stephenn.roguelike.model.World
 import com.badlogic.gdx.Input.Keys
 
 class GameScreen extends Screen with InputProcessor {

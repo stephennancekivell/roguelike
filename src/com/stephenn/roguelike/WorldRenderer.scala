@@ -1,4 +1,4 @@
-package com.stephenn.rougelike
+package com.stephenn.roguelike
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color

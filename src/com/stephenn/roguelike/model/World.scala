@@ -1,4 +1,4 @@
-package com.stephenn.rougelike.model
+package com.stephenn.roguelike.model
 
 class World {
   var grid = Array.fill(10, 10)(new Tile)
