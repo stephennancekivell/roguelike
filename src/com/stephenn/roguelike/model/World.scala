@@ -1,12 +1,7 @@
 package com.stephenn.roguelike.model
 
 import com.badlogic.gdx.Gdx
-
-case class Point(x: Int, y: Int) {
-  def add(p: Point) = {
-    Point(p.x + this.x, p.y + this.y)
-  }
-}
+import com.stephenn.roguelike.Point
 
 class World {
   var grid = Array.fill(10, 10)(new Tile)
