@@ -63,18 +63,14 @@ class World {
   }
 }
 
-object World {
+object World extends RoomMaker {
+  
   def generateRooms(mapWidth: Int, mapHeight: Int) = {
     
     case class room(height: Int, width: Int, corner: Vector2)
     
     val rooms = (0 until 10).map { _ =>
-      new Rectangle(
-          Random.nextInt(mapWidth),
-          Random.nextInt(mapHeight),
-          2 + Random.nextInt(8),
-          2 + Random.nextInt(8)
-          )
+      generateRoom(mapWidth, mapHeight)
     }
 
     //stop the rooms overlapping
@@ -142,4 +138,21 @@ object World {
       grid(y)(ySorted(0).x).isGround = true
     }
   }
+}
+
+trait RoomMaker {
+  
+  def randomInt(n: Int) = Random.nextInt(n)
+  
+  def generateRoom(mapWidth: Int, mapHeight: Int) = {
+    val maxHeightWidth = 10
+    val minHeightWidth = 2
+    new Rectangle(
+          randomInt(mapWidth - maxHeightWidth),
+          randomInt(mapHeight - maxHeightWidth),
+          minHeightWidth + randomInt(maxHeightWidth - minHeightWidth),
+          minHeightWidth + randomInt(maxHeightWidth - minHeightWidth)
+          )
+  }
+  
 }

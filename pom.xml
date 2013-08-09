@@ -67,12 +67,12 @@
       <version>1.6.9</version>
       <scope>test</scope>
     </dependency> -->
-    <!-- <dependency>
+    <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest</artifactId>
-      <version>1.2</version>
+      <artifactId>scalatest_2.10</artifactId>
+      <version>1.9.1</version>
       <scope>test</scope>
-    </dependency> -->
+    </dependency>
   </dependencies>
 
   <build>
