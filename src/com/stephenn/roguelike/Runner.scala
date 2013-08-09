@@ -8,10 +8,9 @@ object Runner {
     var cfg = new LwjglApplicationConfiguration()
 	cfg.title = "rougelike"
 	cfg.useGL20 = true
-	cfg.width = 480
-	cfg.height = 320
+	cfg.width = 1280
+	cfg.height = 768
 	
-//	new LwjglApplication(new RougeLikeGame(), cfg)
     new LwjglApplication(new MyGame(), cfg)
   }
 }

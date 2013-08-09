@@ -6,8 +6,8 @@ class Tile {
   // var items
   // var npc
   
-  var isGround = true
+  var isGround = false
   
+  var isWall = false
   // groundType?
-  
 }

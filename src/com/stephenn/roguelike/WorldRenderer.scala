@@ -10,8 +10,8 @@ class WorldRenderer(world: World) {
   
   val TILE_WIDTH = 1f
   
-  val CAMERA_WIDTH = 10f
-  val CAMERA_HEIGHT = 7f
+  val CAMERA_WIDTH = 20f
+  val CAMERA_HEIGHT = 14f
   val cam: OrthographicCamera = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT)
   cam.position.set(CAMERA_WIDTH / 2f, CAMERA_HEIGHT / 2f, 0)
   cam.update
@@ -42,8 +42,8 @@ class WorldRenderer(world: World) {
     }
   }
   
-  def zoomIn = zoom(0.1f)
-  def zoomOut = zoom(-0.1f)
+  def zoomIn = zoom(0.4f)
+  def zoomOut = zoom(-0.4f)
   
   def zoom(mod: Float) {
     cam.zoom += mod
