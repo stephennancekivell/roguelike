@@ -52,6 +52,15 @@ class World {
     p.y < grid.length&&
     p.x < grid(0).length 
   }
+  
+  def reRender = {
+    grid = World.generate
+    movePlayer(Point(0,0))
+  }
+  
+  def press2 {
+    World.drawPath(Point(0,0), Point(10, 5), grid)
+  }
 }
 
 object World {
@@ -59,7 +68,7 @@ object World {
     
     case class room(height: Int, width: Int, corner: Vector2)
     
-    val rooms = (0 until 5).map { _ =>
+    val rooms = (0 until 10).map { _ =>
       new Rectangle(
           Random.nextInt(mapWidth),
           Random.nextInt(mapHeight),
@@ -67,32 +76,25 @@ object World {
           2 + Random.nextInt(8)
           )
     }
-    
+
     //stop the rooms overlapping
-    for (a <- 0 to rooms.length-1){
-      rooms(a)
-      for (b <- 0 to rooms.length-1) {
-        if (a != b){
-          if (rooms(a).overlaps(rooms(b))){
-            val aAndB = List(rooms(a), rooms(b))
-            
-            val sortedY = aAndB.sortBy(_.getY())
-            sortedY(1).setY(sortedY(1).getY() + (sortedY(0).height - sortedY(0).getY()))
-            
-            val sortedX = aAndB.sortBy(_.getX())
-            sortedX(1).setX(sortedX(1).getX() + (sortedX(0).width - sortedX(0).getX()))
-          }
-        }
+    for (a <- 0 to rooms.length - 1; b <- 0 to rooms.length - 1) if (a != b) {
+      if (rooms(a).overlaps(rooms(b))) {
+        val aAndB = List(rooms(a), rooms(b))
+
+        val sortedY = aAndB.sortBy(_.getY())
+        sortedY(1).setY(sortedY(1).getY() + (sortedY(0).height - sortedY(0).getY()))
+
+        val sortedX = aAndB.sortBy(_.getX())
+        sortedX(1).setX(sortedX(1).getX() + (sortedX(0).width - sortedX(0).getX()))
       }
     }
-    
-    Gdx.app.log("World", rooms.toString)
     
     rooms
   }
   
   def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
-    var grid = Array.fill(maxY, maxX)(new Tile)
+    val grid = Array.fill(maxY, maxX)(new Tile)
     
     rooms.foreach(room =>{
       for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt; y <- room.getY.toInt to room.getY.toInt+room.height.toInt) {
@@ -102,6 +104,8 @@ object World {
         }
       }
     })
+    
+    makePathBetween(rooms(0), rooms(1), grid)
     
     grid
   }
@@ -119,7 +123,23 @@ object World {
       t.isGround = true
       t
     }
-  } 
+  }
   
+  def makePathBetween(a: Rectangle, b: Rectangle, grid: Array[Array[Tile]]) {
+    val from = Point(a.x.toInt + Random.nextInt(a.width.toInt), a.y.toInt + Random.nextInt(a.height.toInt))
+    val to = Point(b.x.toInt + Random.nextInt(b.width.toInt), b.y.toInt + Random.nextInt(b.height.toInt))
+    drawPath(from, to, grid)
+  }
   
+  def drawPath(a: Point, b: Point, grid: Array[Array[Tile]]){
+    val xSorted = Seq(a, b).sortBy(_.x)
+    for (x <- xSorted(0).x to xSorted(1).x) {
+      grid(xSorted(0).y)(x).isGround = true
+    }
+    
+    val ySorted = Seq(a, b).sortBy(_.y)
+    for (y <- ySorted(0).y to ySorted(1).y) {
+      grid(y)(ySorted(0).x).isGround = true
+    }
+  }
 }
