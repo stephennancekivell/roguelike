@@ -35,10 +35,10 @@ class WorldRenderer(world: World) {
   def drawTile(t: Tile, x: Int, y: Int) {
     if (t.player.isDefined) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
-    } else {
-      if (t.isGround) {
-        spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
-      }
+    } else if (t.isGround) {
+      spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
+    } else if (t.isWall) {
+      spriteBatch.draw(spriteCache.wall, x, y, 1, 1)
     }
   }
   

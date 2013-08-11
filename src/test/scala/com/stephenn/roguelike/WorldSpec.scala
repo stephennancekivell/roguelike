@@ -17,8 +17,8 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       val room = roomMaker.generateRoom(50, 50)
       room.getX() should equal (0.0)
       room.getY() should equal (0.0)
-      room.height should equal (2)
-      room.width should equal (2)
+      room.height should equal (roomMaker.roomMinHeightWidth)
+      room.width should equal (roomMaker.roomMinHeightWidth)
     }
     
     it("should make biggest room is top corner") {
@@ -29,8 +29,8 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       val room = roomMaker.generateRoom(50, 50)
       room.getX() should equal (39.0)
       room.getY() should equal (39.0)
-      room.height should equal (9)
-      room.width should equal (9)
+      room.height should equal (roomMaker.roomMaxHeightWidth)
+      room.width should equal (roomMaker.roomMaxHeightWidth)
     }
     
     it ("should stop overlapping in X") {
@@ -75,10 +75,10 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       map(7) should equal("          ")
       map(6) should equal("          ")
       map(5) should equal("          ")
-      map(4) should equal(" ....     ")
-      map(3) should equal(" ....     ")
-      map(2) should equal(" ....     ")
-      map(1) should equal(" ....     ")
+      map(4) should equal(" ####     ")
+      map(3) should equal(" #..#     ")
+      map(2) should equal(" #..#     ")
+      map(1) should equal(" ####     ")
       map(0) should equal("          ")
     }
   }

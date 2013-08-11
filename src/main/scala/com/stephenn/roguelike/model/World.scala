@@ -107,14 +107,14 @@ trait RoomMaker {
   
   def randomInt(n: Int) = Random.nextInt(n)
   
+  val roomMaxHeightWidth = 10
+  val roomMinHeightWidth = 4
   def generateRoom(mapWidth: Int, mapHeight: Int) = {
-    val maxHeightWidth = 10
-    val minHeightWidth = 2
     new Rectangle(
-          randomInt(mapWidth - maxHeightWidth),
-          randomInt(mapHeight - maxHeightWidth),
-          minHeightWidth + randomInt(maxHeightWidth - minHeightWidth),
-          minHeightWidth + randomInt(maxHeightWidth - minHeightWidth)
+          randomInt(mapWidth - roomMaxHeightWidth),
+          randomInt(mapHeight - roomMaxHeightWidth),
+          roomMinHeightWidth + randomInt(roomMaxHeightWidth - roomMinHeightWidth + 1),
+          roomMinHeightWidth + randomInt(roomMaxHeightWidth - roomMinHeightWidth + 1)
           )
   }
   
@@ -159,13 +159,25 @@ trait RoomMaker {
   def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
     val grid = Array.fill(maxY, maxX)(new Tile)
     
-    rooms.foreach(room =>{
-      for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt -1; y <- room.getY.toInt to room.getY.toInt+room.height.toInt-1) {
+    rooms.foreach { room =>
+      for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt-1) {
+        grid(room.getY.toInt)(x).isWall = true
+        grid(room.getY.toInt + room.height.toInt -1)(x).isWall = true
+      }
+      
+      for(y <- room.getY.toInt to room.getY.toInt+room.height.toInt-1) {
+        grid(y)(room.getX.toInt).isWall = true
+        grid(y)(room.getX.toInt + room.width.toInt -1).isWall = true
+      }
+    }
+    
+    rooms.foreach { room =>
+      for(x <- room.getX.toInt+1 to room.getX.toInt+room.width.toInt -2; y <- room.getY.toInt + 1 to room.getY.toInt+room.height.toInt-2) {
         if (x < maxX && y < maxY){
           grid(y)(x).isGround = true
         }
       }
-    })
+    }
     
     grid
   }

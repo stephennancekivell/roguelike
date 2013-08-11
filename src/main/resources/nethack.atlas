@@ -5,28 +5,35 @@ filter: Nearest,Nearest
 repeat: none
 bee
   rotate: false
-  xy: 0, 0
+  xy: 1, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 black
   rotate: false
-  xy: 32, 0
+  xy: 35, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 fly
   rotate: false
-  xy: 64, 0
+  xy: 69, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+wall
+  rotate: false
+  xy: 103, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 ground1
   rotate: false
-  xy: 96, 0
+  xy: 137, 1
   size: 31, 32
   orig: 31, 32
   offset: 0, 0
