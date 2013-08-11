@@ -5,6 +5,8 @@ import com.stephenn.roguelike.model.World
 import com.stephenn.roguelike.model.RoomMaker
 import org.scalatest.matchers.ShouldMatchers
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
+import com.stephenn.roguelike.model.Tile
 
 class WorldSpec extends FunSpec with ShouldMatchers {
   
@@ -80,6 +82,38 @@ class WorldSpec extends FunSpec with ShouldMatchers {
 	      " #..#     ",
 	      " ####     ",
 	      "          ").mkString("\n"))
+    }
+    
+    it("finds the shortest path") {
+      val roomMaker = new RoomMaker {}
+      
+      val path = roomMaker.goToAll(Seq(new Vector2(5,5)), Seq(
+          new Vector2(7,7),
+          new Vector2(6,6),
+          new Vector2(2,2)
+          ))
+          
+      path.length should equal(4)
+      path(0) should equal(new Vector2(5,5))
+      path(1) should equal(new Vector2(6,6))
+      path(2) should equal(new Vector2(7,7))
+      path(3) should equal(new Vector2(2,2))
+    }
+    
+    it("makes a path") {
+      val roomMaker = new RoomMaker {}
+      
+      val grid = Array.fill(6, 6)(new Tile)
+      
+      roomMaker.drawPath(Point(1,1), Point(5,5), grid)
+      
+      roomMaker.gridToString(grid) should equal (Array(
+	      "     .",
+	      "     .",
+	      "     .",
+	      "     .",
+	      " .....",
+	      "      ").mkString("\n"))
     }
   }
 }
