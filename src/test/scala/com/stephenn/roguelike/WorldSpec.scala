@@ -68,18 +68,18 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       val roomMaker = new RoomMaker {}
       
       val grid = roomMaker.makeGridFromRooms(Seq(new Rectangle(1,1,4,4)), 10, 10)
-      val map = roomMaker.gridToString(grid)
       
-      map(9) should equal("          ")
-      map(8) should equal("          ")
-      map(7) should equal("          ")
-      map(6) should equal("          ")
-      map(5) should equal("          ")
-      map(4) should equal(" ####     ")
-      map(3) should equal(" #..#     ")
-      map(2) should equal(" #..#     ")
-      map(1) should equal(" ####     ")
-      map(0) should equal("          ")
+      roomMaker.gridToString(grid) should equal (Array(
+	      "          ",
+	      "          ",
+	      "          ",
+	      "          ",
+	      "          ",
+	      " ####     ",
+	      " #..#     ",
+	      " #..#     ",
+	      " ####     ",
+	      "          ").mkString("\n"))
     }
   }
 }

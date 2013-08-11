@@ -196,6 +196,6 @@ trait RoomMaker {
         }
       }
       new String(chars)
-    }
+    }.reverse.mkString("\n")
   }
 }
