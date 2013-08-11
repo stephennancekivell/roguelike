@@ -5,6 +5,8 @@ import com.stephenn.roguelike.Point
 import scala.util.Random
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Rectangle
+import org.slf4j.LoggerFactory
+
 
 class World {
   var grid = World.generate
@@ -65,36 +67,11 @@ class World {
 
 object World extends RoomMaker {
   
-  def generateRooms(mapWidth: Int, mapHeight: Int) = {
-    
-    case class room(height: Int, width: Int, corner: Vector2)
-    
-    val rooms = (0 until 10).map { _ =>
-      generateRoom(mapWidth, mapHeight)
-    }
-
-    //stop the rooms overlapping
-    for (a <- 0 to rooms.length - 1; b <- 0 to rooms.length - 1) if (a != b) {
-      if (rooms(a).overlaps(rooms(b))) {
-        val aAndB = List(rooms(a), rooms(b))
-
-        val sortedY = aAndB.sortBy(_.getY())
-        sortedY(1).setY(sortedY(1).getY() + (sortedY(0).height - sortedY(0).getY()))
-
-        val sortedX = aAndB.sortBy(_.getX())
-        sortedX(1).setX(sortedX(1).getX() + (sortedX(0).width - sortedX(0).getX()))
-      }
-    }
-    
-    rooms
-  }
-  
   def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
     val grid = Array.fill(maxY, maxX)(new Tile)
     
     rooms.foreach(room =>{
       for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt; y <- room.getY.toInt to room.getY.toInt+room.height.toInt) {
-        Gdx.app.log("world", s"ground: $x, $y")
         if (x < maxX && y < maxY){
           grid(y)(x).isGround = true
         }
@@ -142,6 +119,8 @@ object World extends RoomMaker {
 
 trait RoomMaker {
   
+  val logger = LoggerFactory.getLogger(this.getClass())
+  
   def randomInt(n: Int) = Random.nextInt(n)
   
   def generateRoom(mapWidth: Int, mapHeight: Int) = {
@@ -155,4 +134,41 @@ trait RoomMaker {
           )
   }
   
+  def generateRooms(mapWidth: Int, mapHeight: Int) = {
+    val rooms = (0 until 10).map { _ =>
+      generateRoom(mapWidth, mapHeight)
+    }
+    
+    val nonOverlapping = stopOverlapping(rooms)
+    
+    withoutOutsideBounds(nonOverlapping, mapWidth, mapHeight)
+  }
+  
+  def stopOverlapping(rooms: Seq[Rectangle]) = stopOverlappingY(stopOverlappingX(rooms))
+  
+  def stopOverlappingX(rooms: Seq[Rectangle]) = stopOverLappingDirection(rooms, (r:Rectangle) => r.getX, (r: Rectangle) => r.width, (r: Rectangle, f: Float) => r.setX(f))
+  def stopOverlappingY(rooms: Seq[Rectangle]) = stopOverLappingDirection(rooms, (r:Rectangle) => r.getY, (r: Rectangle) => r.height, (r: Rectangle, f: Float) => r.setY(f))
+  
+  def stopOverLappingDirection(rooms: Seq[Rectangle], getDirection:(Rectangle => Float), getSize: (Rectangle => Float), setDirection: (Rectangle, Float) => Unit): Seq[Rectangle] = {
+    if (rooms.length == 1) {
+      rooms
+    } else {
+      val sorted = rooms.sortBy(getDirection)
+      val head = sorted.head
+      val tail = sorted.tail
+      sorted.tail.foreach(room => {
+        if (room.overlaps(sorted.head)) {
+          setDirection(room, getDirection(sorted.head) + getSize(sorted.head))
+        }
+      })
+      Seq(sorted.head) ++ stopOverLappingDirection(sorted.tail, getDirection, getSize, setDirection)
+    }
+  }
+  
+  def withoutOutsideBounds(rooms:Seq[Rectangle], maxX: Int, maxY: Int) = {
+    rooms.filter { room =>
+      room.getX + room.width < maxX &
+      room.getY + room.height < maxY
+    }
+  }
 }
