@@ -12,10 +12,8 @@ class World {
   var grid = LevelGenerator.generate
 
   val player = new Player
-
-  getTile(Point(4, 4)).player = Some(player)
-
-  var playerPos = Point(4, 4)
+  var playerPos = Point(grid(0).length/2 , grid.length/2)
+  getTile(playerPos).player = Some(player)
 
   def getTile(p: Point) = grid(p.y)(p.x)
 
