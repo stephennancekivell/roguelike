@@ -67,22 +67,6 @@ class World {
 
 object World extends RoomMaker {
   
-  def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
-    val grid = Array.fill(maxY, maxX)(new Tile)
-    
-    rooms.foreach(room =>{
-      for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt; y <- room.getY.toInt to room.getY.toInt+room.height.toInt) {
-        if (x < maxX && y < maxY){
-          grid(y)(x).isGround = true
-        }
-      }
-    })
-    
-    makePathBetween(rooms(0), rooms(1), grid)
-    
-    grid
-  }
-  
   def generate = {
     val max = 50
     
@@ -169,6 +153,37 @@ trait RoomMaker {
     rooms.filter { room =>
       room.getX + room.width < maxX &
       room.getY + room.height < maxY
+    }
+  }
+  
+  def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
+    val grid = Array.fill(maxY, maxX)(new Tile)
+    
+    rooms.foreach(room =>{
+      for(x <- room.getX.toInt to room.getX.toInt+room.width.toInt -1; y <- room.getY.toInt to room.getY.toInt+room.height.toInt-1) {
+        if (x < maxX && y < maxY){
+          grid(y)(x).isGround = true
+        }
+      }
+    })
+    
+    grid
+  }
+  
+  def gridToString(grid: Array[Array[Tile]]) = {
+    grid.map { col =>
+      val chars = col.map { t =>
+        if (t.player.isDefined) {
+          '@'
+        } else if (t.isGround) {
+          '.'
+        } else if (t.isWall){
+          '#'
+        } else {
+          ' '
+        }
+      }
+      new String(chars)
     }
   }
 }
