@@ -158,4 +158,21 @@ trait LevelGenerator {
       grid(y)(xSorted(1).x).isGround = true
     }
   }
+  
+  def getPlayerStartLoc(grid: Array[Array[Tile]]) = {
+    val walkable = getIndexedWalkable(grid)
+    walkable(randomInt(walkable.length))._1
+  }
+  
+  def getIndexedWalkable(grid: Array[Array[Tile]]) = {
+    indexGrid(grid).filter(tuple => tuple._2.isWalkable)
+  }
+  
+  def indexGrid(grid: Array[Array[Tile]]) = {
+    (0 to grid.length-1).map { y =>
+      (0 to grid(y).length-1). map {x =>
+        Point(x,y) -> grid(y)(x)
+      }
+    }.flatten
+  }
 }

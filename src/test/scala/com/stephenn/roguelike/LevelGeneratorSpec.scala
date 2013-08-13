@@ -6,10 +6,13 @@ import org.scalatest.matchers.ShouldMatchers
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.stephenn.roguelike.model.Tile
+import scala.collection.immutable._
 
 class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
   
-  describe("level generation") ({
+  describe("level generation") {
+    val levelGenerator = new LevelGenerator {}
+    
     it("should make smallest in bottom corner rooms") {
       val levelGenerator = new LevelGenerator {
         override def randomInt(n: Int) = 0
@@ -35,7 +38,6 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
     
     it ("should stop overlapping in X") ({
-      val levelGenerator = new LevelGenerator {}
       val rooms = Seq(
         new Rectangle(3, 1, 5, 5),      	new Rectangle(0, 2, 5, 5),      	new Rectangle(2, 3, 5, 5))
       
@@ -51,7 +53,6 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
     })
     
     it ("filters rooms that dont fit on the map") ({
-      val levelGenerator = new LevelGenerator {}
       val rooms = Seq(
           new Rectangle(1, 1, 5, 5),          new Rectangle(9, 9, 5, 5))
           
@@ -63,8 +64,6 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
     })
     
     it("makes a map of tiles from rooms") ({
-      val levelGenerator = new LevelGenerator {}
-      
       val grid = levelGenerator.makeGridFromRooms(Seq(new Rectangle(1, 1, 4, 4)), 10, 10)
       
       levelGenerator.gridToString(grid) should equal (Array(
@@ -81,8 +80,6 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
     })
     
     it("finds the shortest path") ({
-      val levelGenerator = new LevelGenerator {}
-      
       val path = levelGenerator.goToAll(Seq(new Vector2(5, 5)), Seq(
           new Vector2(7, 7),          new Vector2(6, 6),          new Vector2(2, 2)
           ))
@@ -95,8 +92,6 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
     })
     
     it("makes a path") {
-      val levelGenerator = new LevelGenerator {}
-      
       val grid = Array.fill(6, 6)(new Tile)
       
       levelGenerator.drawPath(Point(1,1), Point(5,5), grid)
@@ -109,5 +104,61 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
 	      " .....",
 	      "      ").mkString("\n"))
     }
-  })
+    
+    it("should make a indexedGrid") {
+      val grid = Array.fill(2, 2)(new Tile)
+      
+      val indexed = levelGenerator.indexGrid(grid)
+      
+      indexed.map(_._1) should equal(Seq(
+    		  Point(0,0),
+    		  Point(1,0),
+    		  Point(0,1),
+    		  Point(1,1)
+          ))
+    }
+    
+    it("should get inexded walkable") {
+      val grid = Array.fill(2, 2)(new Tile)
+      grid(0)(0).isGround = true
+      
+      val indexed = levelGenerator.getIndexedWalkable(grid)
+      
+      indexed.map(_._1) should equal(Seq(
+    		  Point(0,0)
+          ))
+    }
+
+    describe("player placement") {
+      def overriddenGetIndexedWalkable(grid: Array[Array[Tile]]) = {
+        def groundTile = {
+          val t = new Tile
+          t.isGround = true
+          t
+        }
+
+        IndexedSeq(Point(0, 0) -> groundTile, Point(1, 1) -> groundTile)
+      }
+
+      val grid = Array.fill(2, 2)(new Tile)
+
+      it("should set player start location. lower bound") {
+        val levelGenerator = new LevelGenerator {
+          override def randomInt(n: Int) = 0
+          override def getIndexedWalkable(grid: Array[Array[Tile]]) = overriddenGetIndexedWalkable(grid)
+        }
+        
+        levelGenerator.getPlayerStartLoc(grid) should equal(Point(0, 0))
+      }
+      
+      it("should set player start location. upper bound") {
+        val levelGenerator = new LevelGenerator {
+          override def randomInt(n: Int) = n-1
+          override def getIndexedWalkable(grid: Array[Array[Tile]]) = overriddenGetIndexedWalkable(grid)
+        }
+        
+        levelGenerator.getPlayerStartLoc(grid) should equal(Point(1, 1))
+      }
+    }
+  }
 }

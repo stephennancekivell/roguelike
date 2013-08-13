@@ -8,5 +8,7 @@ class Tile {
   
   var isGround = false
   
+  def isWalkable = isGround
+  
   // groundType?
 }
