@@ -8,14 +8,11 @@ import com.badlogic.gdx.math.Rectangle
 import org.slf4j.LoggerFactory
 import com.stephenn.roguelike.LevelGenerator
 
-class World {
-  var grid = LevelGenerator.generate
-
+class World extends WorldTrait{
+  
   val player = new Player
   var playerPos = LevelGenerator.getPlayerStartLoc(grid)
   getTile(playerPos).player = Some(player)
-
-  def getTile(p: Point) = grid(p.y)(p.x)
 
   var time = 0l
 
@@ -42,17 +39,6 @@ class World {
     }
   }
 
-  def canMovePlayerTo(p: Point) = {
-    isInWorld(p)
-  }
-
-  def isInWorld(p: Point) = {
-    p.x >= 0 &&
-      p.y >= 0 &&
-      p.y < grid.length &&
-      p.x < grid(0).length
-  }
-
   def reRender = {
     grid = LevelGenerator.generate
     movePlayer(Point(0, 0))
@@ -61,4 +47,22 @@ class World {
   def press2 {
     LevelGenerator.drawPath(Point(0, 0), Point(10, 5), grid)
   }
+}
+
+trait WorldTrait {
+  var grid = generateGrid
+  def generateGrid = LevelGenerator.generate
+  
+  def isInWorld(p: Point) = {
+    p.x >= 0 &&
+      p.y >= 0 &&
+      p.y < grid.length &&
+      p.x < grid(0).length
+  }
+  
+  def canMovePlayerTo(p: Point) = {
+    isInWorld(p) && getTile(p).isWalkable
+  }
+  
+  def getTile(p: Point) = grid(p.y)(p.x)
 }
