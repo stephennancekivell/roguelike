@@ -73,10 +73,10 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
 	      "          ",
 	      "          ",
 	      "          ",
-	      " ####     ",
-	      " #..#     ",
-	      " #..#     ",
-	      " ####     ",
+	      " ....     ",
+	      " ....     ",
+	      " ....     ",
+	      " ....     ",
 	      "          ").mkString("\n"))
     })
     

@@ -9,5 +9,4 @@ class SpriteCache {
   val ground1 = atlas.findRegion("ground1")
   val bee = atlas.findRegion("bee")
   val black = atlas.findRegion("black")
-  val wall = atlas.findRegion("wall")
 }

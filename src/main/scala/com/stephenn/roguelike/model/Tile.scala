@@ -8,6 +8,5 @@ class Tile {
   
   var isGround = false
   
-  var isWall = false
   // groundType?
 }

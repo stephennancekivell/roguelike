@@ -42,8 +42,6 @@ class WorldRenderer(world: World) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
-    } else if (t.isWall) {
-      spriteBatch.draw(spriteCache.wall, x, y, 1, 1)
     }
   }
   

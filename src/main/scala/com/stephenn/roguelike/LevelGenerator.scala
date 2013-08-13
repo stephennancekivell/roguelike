@@ -80,21 +80,9 @@ trait LevelGenerator {
 
   def makeGridFromRooms(rooms: Seq[Rectangle], maxX: Int, maxY: Int) = {
     val grid = Array.fill(maxY, maxX)(new Tile)
-
+    
     rooms.foreach { room =>
-      for (x <- room.getX.toInt to room.getX.toInt + room.width.toInt - 1) {
-        grid(room.getY.toInt)(x).isWall = true
-        grid(room.getY.toInt + room.height.toInt - 1)(x).isWall = true
-      }
-
-      for (y <- room.getY.toInt to room.getY.toInt + room.height.toInt - 1) {
-        grid(y)(room.getX.toInt).isWall = true
-        grid(y)(room.getX.toInt + room.width.toInt - 1).isWall = true
-      }
-    }
-
-    rooms.foreach { room =>
-      for (x <- room.getX.toInt + 1 to room.getX.toInt + room.width.toInt - 2; y <- room.getY.toInt + 1 to room.getY.toInt + room.height.toInt - 2) {
+      for (x <- room.getX.toInt to room.getX.toInt + room.width.toInt - 1; y <- room.getY.toInt to room.getY.toInt + room.height.toInt - 1) {
         if (x < maxX && y < maxY) {
           grid(y)(x).isGround = true
         }
@@ -111,8 +99,6 @@ trait LevelGenerator {
           '@'
         } else if (t.isGround) {
           '.'
-        } else if (t.isWall) {
-          '#'
         } else {
           ' '
         }
