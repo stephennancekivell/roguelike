@@ -10,6 +10,7 @@ import com.badlogic.gdx.Input.Keys
 class GameScreen extends Screen with InputProcessor {
   
   var renderer: WorldRenderer = _
+  var overlayRenderer: OverlayRenderer = _
   var world: World = _
   
   def resize(width: Int, height: Int) {
@@ -21,13 +22,15 @@ class GameScreen extends Screen with InputProcessor {
     Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1)
 	Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT)
     
-    renderer.render(world)
+    renderer.render
+    overlayRenderer.render
   }
   
   def show(){
     Gdx.input.setInputProcessor(this)
     world = new World
     renderer = new WorldRenderer(world)
+    overlayRenderer = new OverlayRenderer(world)
   }
   
   def hide() = Gdx.input.setInputProcessor(null)

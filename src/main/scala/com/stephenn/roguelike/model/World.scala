@@ -16,7 +16,15 @@ class World extends WorldTrait{
   
   def newEnemyAtRandom = new Enemy(this, LevelGenerator.getRandomWalkable(grid)) 
   
-  var npcs = Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
+  var npcs = newNpcs 
+  
+  def newNpcs = {
+    val enemies = Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
+    
+    enemies.foreach(e => getTile(e.location).npc = Some(e))
+    
+    enemies
+  }
 
   var time = 0l
 
@@ -49,9 +57,9 @@ class World extends WorldTrait{
     grid = LevelGenerator.generate
     movePlayer(Point(0, 0))
   }
-
+  
   def press2 {
-    LevelGenerator.drawPath(Point(0, 0), Point(10, 5), grid)
+  
   }
 }
 

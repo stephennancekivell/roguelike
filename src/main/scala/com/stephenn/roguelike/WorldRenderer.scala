@@ -2,9 +2,8 @@ package com.stephenn.roguelike
 
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.stephenn.roguelike.model.Tile
-import com.stephenn.roguelike.model.World
-
+import com.stephenn.roguelike.model._
+import com.badlogic.gdx.Gdx
 
 class WorldRenderer(world: World) {
   
@@ -12,29 +11,33 @@ class WorldRenderer(world: World) {
   
   val CAMERA_WIDTH = 20f
   val CAMERA_HEIGHT = 14f
-  val cam: OrthographicCamera = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT)
+  val cam = new OrthographicCamera(CAMERA_WIDTH, CAMERA_HEIGHT)
   cam.zoom = 3
   cam.update
   
   var spriteCache: SpriteCache = new SpriteCache
   val spriteBatch = new SpriteBatch()
   
-  def render(world: World) {
-    val tiles = world.grid
-    
+  def render {
     cam.position.set(world.playerPos.x, world.playerPos.y, 0)
     cam.update
     
     spriteBatch.begin
     spriteBatch.setProjectionMatrix(cam.combined)
     
+    drawTiles(world)
+    
+    spriteBatch.end
+  }
+  
+  def drawTiles(world: World) {
+    val tiles = world.grid
+    
     for (y <- 0 to tiles.length -1){
       for (x <- 0 to tiles(y).length -1) {
         drawTile(tiles(y)(x), x, y)
       }
     }
-    
-    spriteBatch.end
   }
   
   def drawTile(t: Tile, x: Int, y: Int) {
