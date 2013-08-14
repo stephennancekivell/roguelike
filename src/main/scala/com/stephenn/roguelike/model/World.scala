@@ -1,23 +1,29 @@
 package com.stephenn.roguelike.model
 
 import com.badlogic.gdx.Gdx
-import com.stephenn.roguelike.Point
 import scala.util.Random
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Rectangle
 import org.slf4j.LoggerFactory
-import com.stephenn.roguelike.LevelGenerator
+import com.stephenn.roguelike._
+import com.stephenn.roguelike.npc._
 
 class World extends WorldTrait{
   
   val player = new Player
   var playerPos = LevelGenerator.getPlayerStartLoc(grid)
   getTile(playerPos).player = Some(player)
+  
+  def newEnemyAtRandom = new Enemy(this, LevelGenerator.getRandomWalkable(grid)) 
+  
+  var npcs = Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
 
   var time = 0l
 
   def endPlayerTurn {
     time += 1
+    
+    npcs.foreach(_.turn)
   }
 
   def playerUp = movePlayer(Point(0, 1))
@@ -53,7 +59,18 @@ trait WorldTrait {
   var grid = generateGrid
   def generateGrid = LevelGenerator.generate
   
+  def playerPos: Point
+  
+  implicit val floatToInt = Util.floatToInt
+  
   def isInWorld(p: Point) = {
+    p.x >= 0 &&
+      p.y >= 0 &&
+      p.y < grid.length &&
+      p.x < grid(0).length
+  }
+  
+  def isInWorld(p: Vector2) = {
     p.x >= 0 &&
       p.y >= 0 &&
       p.y < grid.length &&
@@ -65,4 +82,23 @@ trait WorldTrait {
   }
   
   def getTile(p: Point) = grid(p.y)(p.x)
+  def getTile(v: Vector2) = grid(v.y)(v.x)
+  
+  def getNeighbouringVectors(p: Vector2) = {
+    Seq(
+        p.cpy().add(Vector2.X),
+        p.cpy().add(Vector2.Y),
+        p.cpy().sub(Vector2.X),
+        p.cpy().sub(Vector2.Y),
+        p.cpy().add(Vector2.X.cpy().add(Vector2.Y)),
+        p.cpy().sub(Vector2.X.cpy().sub(Vector2.Y)),
+        p.cpy().sub(Vector2.X.cpy().add(Vector2.Y)),
+        p.cpy().add(Vector2.X.cpy().sub(Vector2.Y))
+        )
+  }
+  
+  def neighbouringVectorsInWorld(from: Vector2) = getNeighbouringVectors(from).filter(isInWorld)
+  
+  def nextToPlayer(v: Vector2) = neighbouringVectorsInWorld(v).filter(_.equals(playerPos.asVector2)).length > 0
+  
 }

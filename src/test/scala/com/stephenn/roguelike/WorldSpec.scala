@@ -3,6 +3,7 @@ package com.stephenn.roguelike
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSpec
 import com.stephenn.roguelike.model._
+import com.badlogic.gdx.math.Vector2
 
 
 class WorldSpec extends FunSpec with ShouldMatchers {
@@ -14,10 +15,12 @@ class WorldSpec extends FunSpec with ShouldMatchers {
   
   def tinyWorld = new WorldTrait {
     override def generateGrid = Array.fill(2,2)(new Tile)
+    var playerPos = Point(0,0)
   }
   
   def tinyWorldOfGround = new WorldTrait {
     override def generateGrid = Array.fill(2,2)(groundTile)
+    var playerPos = Point(0,0)
   }
   
   describe("player movement") {
@@ -48,5 +51,22 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       world.isInWorld(Point(0,0)) should equal(true)
       world.isInWorld(Point(1,1)) should equal(true)
     }
+    
+    it("should know what neighbouring vectors are") {
+      val n = tinyWorld.getNeighbouringVectors(new Vector2(5,5))
+      
+      n.map { v => (v.x.toInt, v.y.toInt) } should equal(Seq(
+          (6,5),
+          (5,6),
+          (4,5),
+          (5,4),
+          (6,6),
+          (4,6),
+          (4,4),
+          (6,4)
+          ))
+    }
   }
+  
+  
 }
