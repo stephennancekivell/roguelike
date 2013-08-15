@@ -10,7 +10,7 @@ import com.stephenn.roguelike.npc._
 
 class World extends WorldTrait{
   
-  val player = new Player
+  val player = new Player(this)
   var playerPos = LevelGenerator.getPlayerStartLoc(grid).get
   getTile(playerPos).player = Some(player)
   
@@ -27,6 +27,7 @@ class World extends WorldTrait{
     
     npcs.foreach(_.turn)
     spawnEnemies
+    player.endTurn
   }
 
   def playerUp = movePlayer(Point(0, 1))
@@ -44,7 +45,7 @@ class World extends WorldTrait{
       endPlayerTurn
       true
     } else {
-      if (getTile(p).npc.isDefined){
+      if (isInWorld(p) && getTile(p).npc.isDefined){
         player.hit(getTile(p).npc.get)
       }
       false
@@ -116,7 +117,7 @@ trait WorldTrait {
   def newEnemyAtRandom = LevelGenerator.getRandomWalkable(grid).headOption.map(new Enemy(this, _))
   
   def spawnEnemies {
-    if ((time % 20) == 0){
+    if (time % 20 == 0){
       newEnemyAtRandom
     }
   }

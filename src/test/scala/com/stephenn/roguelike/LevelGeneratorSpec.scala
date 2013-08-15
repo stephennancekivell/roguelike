@@ -148,7 +148,7 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
           override def getIndexedWalkable(grid: Array[Array[Tile]]) = overriddenGetIndexedWalkable(grid)
         }
         
-        levelGenerator.getPlayerStartLoc(grid) should equal(Point(0, 0))
+        levelGenerator.getPlayerStartLoc(grid) should equal(Some(Point(0, 0)))
       }
       
       it("should set player start location. upper bound") {
@@ -157,7 +157,7 @@ class LevelGeneratorSpec extends FunSpec with ShouldMatchers {
           override def getIndexedWalkable(grid: Array[Array[Tile]]) = overriddenGetIndexedWalkable(grid)
         }
         
-        levelGenerator.getPlayerStartLoc(grid) should equal(Point(1, 1))
+        levelGenerator.getPlayerStartLoc(grid) should equal(Some(Point(1, 1)))
       }
     }
   }

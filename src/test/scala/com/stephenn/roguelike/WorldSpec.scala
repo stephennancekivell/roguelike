@@ -7,7 +7,9 @@ import com.badlogic.gdx.math.Vector2
 import com.stephenn.roguelike.npc._
 
 
-class WorldSpec extends FunSpec with ShouldMatchers {
+object WorldSpecHelpers extends WorldSpecHelpers
+
+trait WorldSpecHelpers {
   def groundTile = {
     val t = new Tile
     t.isGround = true
@@ -18,15 +20,18 @@ class WorldSpec extends FunSpec with ShouldMatchers {
     override def generateGrid = Array.fill(2,2)(new Tile)
     var playerPos = Point(0,0)
     var npcs = Seq[NPC]()
-    val player = new Player
+    val player = new Player(this)
   }
   
   def tinyWorldOfGround = new WorldTrait {
     override def generateGrid = Array.fill(2,2)(groundTile)
     var playerPos = Point(0,0)
     var npcs = Seq[NPC]()
-    val player = new Player
+    val player = new Player(this)
   }
+}
+
+class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
   
   describe("player movement") {
     it("should stop the player moving where they cannot go") {
@@ -88,6 +93,4 @@ class WorldSpec extends FunSpec with ShouldMatchers {
       w.npcs.length should equal(2)
     }
   }
-  
-  
 }

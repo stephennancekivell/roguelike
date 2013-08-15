@@ -5,7 +5,6 @@ import com.stephenn.roguelike.model._
 import com.badlogic.gdx.math.Vector2
 
 trait NPC extends Character {
-  println("startof NPC")
   var location: Point
   val world: WorldTrait
   
