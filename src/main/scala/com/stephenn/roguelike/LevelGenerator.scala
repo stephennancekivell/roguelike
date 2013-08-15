@@ -163,7 +163,10 @@ trait LevelGenerator {
   
   def getRandomWalkable(grid: Array[Array[Tile]]) = {
     val walkable = getIndexedWalkable(grid)
-    walkable(randomInt(walkable.length))._1
+    walkable.isEmpty match {
+      case false => Some(walkable(randomInt(walkable.length))._1)
+      case _ => None
+    }
   }
   
   def getIndexedWalkable(grid: Array[Array[Tile]]) = {

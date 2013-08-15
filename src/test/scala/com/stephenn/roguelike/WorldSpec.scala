@@ -71,6 +71,22 @@ class WorldSpec extends FunSpec with ShouldMatchers {
           (6,4)
           ))
     }
+    
+    it("spawns new enemies") {
+      val w = tinyWorldOfGround
+      
+      w.spawnEnemies
+      w.time should equal(0)
+      w.npcs.length should equal(1)
+      
+      w.time = 2
+      w.spawnEnemies
+      w.npcs.length should equal(1)
+      
+      w.time = 20
+      w.spawnEnemies
+      w.npcs.length should equal(2)
+    }
   }
   
   

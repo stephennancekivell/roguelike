@@ -11,26 +11,22 @@ import com.stephenn.roguelike.npc._
 class World extends WorldTrait{
   
   val player = new Player
-  var playerPos = LevelGenerator.getPlayerStartLoc(grid)
+  var playerPos = LevelGenerator.getPlayerStartLoc(grid).get
   getTile(playerPos).player = Some(player)
   
   var npcs: Seq[NPC] = Seq()
   
-  def newEnemyAtRandom = new Enemy(this, LevelGenerator.getRandomWalkable(grid)) 
-  
   npcs = newNpcs 
   
   def newNpcs = {
-    Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
-    
+    Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom).flatten
   }
-
-  var time = 0l
 
   def endPlayerTurn {
     time += 1
     
     npcs.foreach(_.turn)
+    spawnEnemies
   }
 
   def playerUp = movePlayer(Point(0, 1))
@@ -72,6 +68,8 @@ trait WorldTrait {
   def player: Player
   
   var playerPos: Point
+  
+  var time = 0l
   
   var npcs: Seq[NPC]
   
@@ -115,4 +113,11 @@ trait WorldTrait {
   
   def nextToPlayer(v: Vector2) = neighbouringVectorsInWorld(v).filter(_.equals(playerPos.asVector2)).length > 0
   
+  def newEnemyAtRandom = LevelGenerator.getRandomWalkable(grid).headOption.map(new Enemy(this, _))
+  
+  def spawnEnemies {
+    if ((time % 20) == 0){
+      newEnemyAtRandom
+    }
+  }
 }
