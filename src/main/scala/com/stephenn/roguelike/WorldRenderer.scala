@@ -24,10 +24,32 @@ class WorldRenderer(world: World) {
     
     spriteBatch.begin
     spriteBatch.setProjectionMatrix(cam.combined)
+    spriteBatch.setColor(1, 1, 1, 1)
     
     drawTiles(world)
     
     spriteBatch.end
+    
+    spriteBatch.begin
+    spriteBatch.setProjectionMatrix(cam.combined)
+    spriteBatch.setColor(1, 1.5f, 1, 1)
+    
+    drawOutOfSight(world)
+    
+    spriteBatch.end
+    
+    
+  }
+  
+  def drawOutOfSight(world: World) {
+    val tiles = world.grid
+    for (y <- 0 to tiles.length -1){
+      for (x <- 0 to tiles(y).length -1) {
+        if (!world.currentlyInSight.contains(Point(x,y))) {
+         drawOutOfSightTile(tiles(y)(x), x, y) 
+        }
+      }
+    }
   }
   
   def drawTiles(world: World) {
@@ -35,15 +57,25 @@ class WorldRenderer(world: World) {
     
     for (y <- 0 to tiles.length -1){
       for (x <- 0 to tiles(y).length -1) {
-        drawTile(tiles(y)(x), x, y, world.currentlyInSight.contains(Point(x,y)))
+        if (world.currentlyInSight.contains(Point(x,y))) {
+         drawTile(tiles(y)(x), x, y) 
+        }
       }
     }
   }
   
-  def drawTile(t: Tile, x: Int, y: Int, inSight: Boolean) {
+  def drawOutOfSightTile(t: Tile, x: Int, y: Int) {
     if (t.player.isDefined) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
-    } else if (t.npc.isDefined && inSight){
+    } else if (t.isGround) {
+      spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
+    }
+  }
+  
+  def drawTile(t: Tile, x: Int, y: Int) {
+    if (t.player.isDefined) {
+      spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
+    } else if (t.npc.isDefined){
       spriteBatch.draw(spriteCache.bee, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
