@@ -5,6 +5,7 @@ import org.scalatest.FunSpec
 import com.stephenn.roguelike.model._
 import com.badlogic.gdx.math.Vector2
 import com.stephenn.roguelike.npc._
+import scala.collection.mutable.Buffer
 
 
 object WorldSpecHelpers extends WorldSpecHelpers
@@ -32,6 +33,7 @@ trait WorldSpecHelpers {
 }
 
 class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
+  implicit val floatToInt = Util.floatToInt
   
   describe("player movement") {
     it("should stop the player moving where they cannot go") {
@@ -91,6 +93,51 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       w.time = 20
       w.spawnEnemies
       w.npcs.length should equal(2)
+    }
+  }
+  
+  describe("line of sight") {
+    it("should getLeftFrom") {
+      val v = tinyWorldOfGround.getLeftFrom(new Vector2(0,0))
+      v.map(v => Point(v.x, v.y)) should equal (Seq(
+          Point(-1,0),
+          Point(-1,1),
+          Point(-1,-1)
+          ))
+    }
+    
+    it("inLineOfSight") {
+      val w = tinyWorldOfGround
+      val v = w.inLineOfSight(new Vector2(0,0), w.getRightFrom)
+      
+      v.map(v => Point(v.x, v.y)) should equal (Seq(
+          Point(1,0),
+          Point(1,1)
+          ))
+    }
+    
+    it("should know") {
+      val w = tinyWorldOfGround
+      val points = w.inLineOfSightFrom(new Vector2(1,1))
+      
+      points should equal(Seq(
+          Point(0,1),
+          Point(0,0),
+          Point(1,0)
+          ))
+    }
+    
+    it("knows when its not") {
+      val w = tinyWorld
+      val points = w.inLineOfSightFrom(new Vector2(1,1))
+      
+      points should equal(Seq())
+    }
+    
+    it("works on a real map") {
+      val w = new World
+      val v = w.inLineOfSightFrom(w.playerPos.asVector2)
+      v.length > 0 should equal(true)
     }
   }
 }

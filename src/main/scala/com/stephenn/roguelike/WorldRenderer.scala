@@ -35,15 +35,15 @@ class WorldRenderer(world: World) {
     
     for (y <- 0 to tiles.length -1){
       for (x <- 0 to tiles(y).length -1) {
-        drawTile(tiles(y)(x), x, y)
+        drawTile(tiles(y)(x), x, y, world.currentlyInSight.contains(Point(x,y)))
       }
     }
   }
   
-  def drawTile(t: Tile, x: Int, y: Int) {
+  def drawTile(t: Tile, x: Int, y: Int, inSight: Boolean) {
     if (t.player.isDefined) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
-    } else if (t.npc.isDefined){
+    } else if (t.npc.isDefined && inSight){
       spriteBatch.draw(spriteCache.bee, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)

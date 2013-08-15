@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle
 import org.slf4j.LoggerFactory
 import com.stephenn.roguelike._
 import com.stephenn.roguelike.npc._
+import scala.collection.mutable.Buffer
 
 class World extends WorldTrait{
   
@@ -28,7 +29,10 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
+    currentlyInSight = inLineOfSightFrom(playerPos.asVector2)
   }
+  
+  var currentlyInSight = Seq[Point]()
 
   def playerUp = movePlayer(Point(0, 1))
   def playerDown = movePlayer(Point(0, -1))
@@ -72,7 +76,7 @@ trait WorldTrait {
   
   var time = 0l
   
-  var npcs: Seq[NPC]
+  var npcs: Seq[NPC] 
   
   implicit val floatToInt = Util.floatToInt
   
@@ -119,6 +123,61 @@ trait WorldTrait {
   def spawnEnemies {
     if (time % 20 == 0){
       newEnemyAtRandom
+    }
+  }
+  
+  def inLineOfSightFrom(from: Vector2) = {
+    val all = inLineOfSight(from, getRightFrom) ++
+	    inLineOfSight(from, getLeftFrom) ++
+	    inLineOfSight(from, getUpFrom) ++
+	    inLineOfSight(from, getDownFrom)
+	
+	val points = all.map(v => Point(v.x, v.y))
+	points.distinct
+  }
+  
+  def getRightFrom(from: Vector2) = {
+    Seq(
+    		from.cpy.add(Vector2.X),
+    		from.cpy.add(Vector2.X).add(Vector2.Y),
+    		from.cpy.add(Vector2.X).sub(Vector2.Y)
+    )
+  }
+  
+  def getLeftFrom(from: Vector2) = {
+    Seq(
+    		from.cpy.sub(Vector2.X),
+    		from.cpy.sub(Vector2.X).add(Vector2.Y),
+    		from.cpy.sub(Vector2.X).sub(Vector2.Y)
+    )
+  }
+  
+  def getUpFrom(from: Vector2) = {
+    Seq(
+    		from.cpy.add(Vector2.Y),
+    		from.cpy.add(Vector2.Y).add(Vector2.X),
+    		from.cpy.add(Vector2.Y).sub(Vector2.X)
+    )
+  }
+  
+  def getDownFrom(from: Vector2) = {
+    Seq(
+    		from.cpy.sub(Vector2.Y),
+    		from.cpy.sub(Vector2.Y).add(Vector2.X),
+    		from.cpy.sub(Vector2.Y).sub(Vector2.X)
+    )
+  }
+  
+  def inLineOfSight(from: Vector2, get: (Vector2) => Seq[Vector2], haveBeen:Buffer[Vector2] = Buffer()):Seq[Vector2] = {
+    if (haveBeen.contains(from)){
+      Seq()
+    } else  {
+	    get(from).filter( t => 
+	      (isInWorld(t) && getTile(t).isGround)
+	    ).map { b =>
+	      haveBeen += b
+	      inLineOfSight(b, get, haveBeen ++ Seq(from)) ++ Seq(b)
+	    }.flatten
     }
   }
 }
