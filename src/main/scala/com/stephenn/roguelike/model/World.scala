@@ -14,16 +14,15 @@ class World extends WorldTrait{
   var playerPos = LevelGenerator.getPlayerStartLoc(grid)
   getTile(playerPos).player = Some(player)
   
+  var npcs: Seq[NPC] = Seq()
+  
   def newEnemyAtRandom = new Enemy(this, LevelGenerator.getRandomWalkable(grid)) 
   
-  var npcs = newNpcs 
+  npcs = newNpcs 
   
   def newNpcs = {
-    val enemies = Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
+    Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom)
     
-    enemies.foreach(e => getTile(e.location).npc = Some(e))
-    
-    enemies
   }
 
   var time = 0l
@@ -49,6 +48,9 @@ class World extends WorldTrait{
       endPlayerTurn
       true
     } else {
+      if (getTile(p).npc.isDefined){
+        player.hit(getTile(p).npc.get)
+      }
       false
     }
   }
@@ -67,7 +69,11 @@ trait WorldTrait {
   var grid = generateGrid
   def generateGrid = LevelGenerator.generate
   
-  def playerPos: Point
+  def player: Player
+  
+  var playerPos: Point
+  
+  var npcs: Seq[NPC]
   
   implicit val floatToInt = Util.floatToInt
   

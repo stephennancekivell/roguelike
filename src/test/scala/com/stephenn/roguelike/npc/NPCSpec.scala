@@ -6,7 +6,7 @@ import com.stephenn.roguelike.model._
 import com.stephenn.roguelike._
 import com.badlogic.gdx.math.Vector2
 
-class NPCSpec extends FunSpec with ShouldMatchers {
+class NPCSpec extends FunSpec with ShouldMatchers  {
   
   def groundTile = {
     val t = new Tile
@@ -17,23 +17,31 @@ class NPCSpec extends FunSpec with ShouldMatchers {
   def tinyWorld = new WorldTrait {
     override def generateGrid = Array.fill(9,9)(groundTile)
     var playerPos = Point(0,0)
+    var npcs = Seq[NPC]()
+    val player = new Player
   }
   
-  def npc = new NPC {
-    val world = tinyWorld
+  def npc(worldIn: WorldTrait = tinyWorld) = new NPC {
+    println("startof newNPC")
+    val world = worldIn
+    
     var location = Point(0,0)
+    var hp = 0
+    var hitDamage = 0
+    
+    this.addToWorld
   }
   
   describe("npc") {
     it("should pick the closest location") {
-      val closest = npc.stepTowards(new Vector2(2,2), new Vector2(8,8)).get
+      val closest = npc().stepTowards(new Vector2(2,2), new Vector2(8,8)).get
       
       closest.x should equal(7)
       closest.y should equal(7)
     }
     
     it("should do nothing when next to player") {
-      val n = npc
+      val n = npc()
       n.location = Point(2,2)
       n.world.playerPos = Point(3,3)
       
@@ -44,7 +52,7 @@ class NPCSpec extends FunSpec with ShouldMatchers {
     }
     
     it("should step towards player") {
-      val n = npc
+      val n = npc()
       n.location = Point(2,2)
       n.world.playerPos = Point(4,4)
       
@@ -52,6 +60,20 @@ class NPCSpec extends FunSpec with ShouldMatchers {
       
       n.location.x should equal(3)
       n.location.y should equal(3)
+    }
+    
+    it("should add itself to the world on creation") {
+      val n = npc()
+      n.world.npcs.length should equal(1)
+      n.world.getTile(n.location).npc should equal(Some(n))
+    }
+    
+    it("at dead it npc should remove from the world and tile") {
+      val n = npc()
+      n.die
+      
+      n.world.npcs.length should equal(0)
+      n.world.getTile(n.location).npc should equal(None)
     }
   }
 }

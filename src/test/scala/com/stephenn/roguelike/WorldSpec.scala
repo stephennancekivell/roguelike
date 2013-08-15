@@ -4,6 +4,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FunSpec
 import com.stephenn.roguelike.model._
 import com.badlogic.gdx.math.Vector2
+import com.stephenn.roguelike.npc._
 
 
 class WorldSpec extends FunSpec with ShouldMatchers {
@@ -16,11 +17,15 @@ class WorldSpec extends FunSpec with ShouldMatchers {
   def tinyWorld = new WorldTrait {
     override def generateGrid = Array.fill(2,2)(new Tile)
     var playerPos = Point(0,0)
+    var npcs = Seq[NPC]()
+    val player = new Player
   }
   
   def tinyWorldOfGround = new WorldTrait {
     override def generateGrid = Array.fill(2,2)(groundTile)
     var playerPos = Point(0,0)
+    var npcs = Seq[NPC]()
+    val player = new Player
   }
   
   describe("player movement") {

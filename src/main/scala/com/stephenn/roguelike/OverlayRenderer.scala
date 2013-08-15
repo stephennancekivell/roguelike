@@ -22,5 +22,6 @@ class OverlayRenderer(world: World) {
   
   def drawStats(world: World) {    
     font.draw(spriteBatch, "T: "+world.time, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -50)
+    font.draw(spriteBatch, "HP: "+world.player.hp, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -30)
   }
 }
