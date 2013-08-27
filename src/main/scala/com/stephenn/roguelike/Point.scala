@@ -11,3 +11,9 @@ case class Point(x: Int, y: Int) {
     new Vector2(x,y)
   }
 }
+
+object Point {
+  def apply(v: Vector2) = {
+    new Point(v.x.toInt, v.y.toInt)
+  }
+}

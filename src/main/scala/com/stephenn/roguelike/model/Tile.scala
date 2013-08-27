@@ -13,5 +13,7 @@ class Tile {
   
   def isWalkable = isGround && player.isEmpty && npc.isEmpty
   
+  def canSeeThrough = isGround
+  
   // groundType?
 }

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import com.stephenn.roguelike._
 import com.stephenn.roguelike.npc._
 import scala.collection.mutable.Buffer
+import scala.util.control.Breaks
 
 class World extends WorldTrait{
   
@@ -29,7 +30,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = inLineOfSightFrom(playerPos.asVector2)
+    currentlyInSight = inLineOfSight2(playerPos.asVector2) //inLineOfSightFrom(playerPos.asVector2)
   }
   
   var currentlyInSight = Seq[Point]()
@@ -62,6 +63,8 @@ class World extends WorldTrait{
   }
   
   def press2 {
+    this.precision += 1
+    Gdx.app.log("precision", ""+precision)
   
   }
 }
@@ -126,58 +129,28 @@ trait WorldTrait {
     }
   }
   
-  def inLineOfSightFrom(from: Vector2) = {
-    val all = inLineOfSight(from, getRightFrom) ++
-	    inLineOfSight(from, getLeftFrom) ++
-	    inLineOfSight(from, getUpFrom) ++
-	    inLineOfSight(from, getDownFrom)
-	
-	val points = all.map(v => Point(v.x, v.y))
-	points.distinct
-  }
+  val logger = LoggerFactory.getLogger(classOf[World])
   
-  def getRightFrom(from: Vector2) = {
-    Seq(
-    		from.cpy.add(Vector2.X),
-    		from.cpy.add(Vector2.X).add(Vector2.Y),
-    		from.cpy.add(Vector2.X).sub(Vector2.Y)
-    )
+  var precision = 120
+  def inLineOfSight2(from: Vector2) = {
+    val vectors = (1 to precision + 1).map(x => {
+      val v = Vector2.X.cpy()
+      v.setAngle((360f / precision) * x)
+      v
+    })
+
+    vectors.map { dv =>
+      inRay(from, dv).map(Point.apply)
+    }.flatten
   }
-  
-  def getLeftFrom(from: Vector2) = {
-    Seq(
-    		from.cpy.sub(Vector2.X),
-    		from.cpy.sub(Vector2.X).add(Vector2.Y),
-    		from.cpy.sub(Vector2.X).sub(Vector2.Y)
-    )
-  }
-  
-  def getUpFrom(from: Vector2) = {
-    Seq(
-    		from.cpy.add(Vector2.Y),
-    		from.cpy.add(Vector2.Y).add(Vector2.X),
-    		from.cpy.add(Vector2.Y).sub(Vector2.X)
-    )
-  }
-  
-  def getDownFrom(from: Vector2) = {
-    Seq(
-    		from.cpy.sub(Vector2.Y),
-    		from.cpy.sub(Vector2.Y).add(Vector2.X),
-    		from.cpy.sub(Vector2.Y).sub(Vector2.X)
-    )
-  }
-  
-  def inLineOfSight(from: Vector2, get: (Vector2) => Seq[Vector2], haveBeen:Buffer[Vector2] = Buffer()):Seq[Vector2] = {
-    if (haveBeen.contains(from)){
+
+  def inRay(v: Vector2, dv: Vector2): Seq[Vector2] = {
+    val n = v.cpy().add(dv)
+
+    if (this.isInWorld(n) && this.getTile(n).canSeeThrough) {
+      Seq(n) ++ inRay(n, dv)
+    } else {
       Seq()
-    } else  {
-	    get(from).filter( t => 
-	      (isInWorld(t) && getTile(t).isGround)
-	    ).map { b =>
-	      haveBeen += b
-	      inLineOfSight(b, get, haveBeen ++ Seq(from)) ++ Seq(b)
-	    }.flatten
     }
   }
 }
