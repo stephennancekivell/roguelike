@@ -30,7 +30,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = inLineOfSight2(playerPos.asVector2) //inLineOfSightFrom(playerPos.asVector2)
+    currentlyInSight = inLineOfSight3//(playerPos.asVector2) //inLineOfSightFrom(playerPos.asVector2)
   }
   
   var currentlyInSight = Seq[Point]()
@@ -71,7 +71,8 @@ class World extends WorldTrait{
 
 trait WorldTrait {
   var grid = generateGrid
-  def generateGrid = LevelGenerator.generate
+//  def generateGrid = LevelGenerator.generate
+  def generateGrid = LevelGenerator.generateRandom
   
   def player: Player
   
@@ -152,5 +153,52 @@ trait WorldTrait {
     } else {
       Seq()
     }
+  }
+  
+  def inLineOfSight3 = {
+    decent1(this.playerPos.asVector2, startSlope = new Vector2(-1, 1), endSlope = new Vector2(0,1))
+  }
+  
+  def decent1(start: Vector2, startSlope: Vector2, endSlope: Vector2): Seq[Point] = {
+    logger.debug("decent1 "+start+" " +startSlope+ " " +endSlope)
+    var scanStart = start.cpy
+    var scanEnd = start.cpy
+    
+    val inSight = Buffer[Point]()
+    
+    scala.util.control.Breaks.breakable {
+      while (true) {
+        logger.debug("" + scanStart)
+        val y = scanStart.y.toInt
+        for (x <- scanStart.x.toInt to scanEnd.x.toInt) {
+          val p = Point(x, y)
+          logger.debug("p" + p)
+          
+          var allBlocked = true
+
+          if (this.isInWorld(p) && this.getTile(p).canSeeThrough) {
+            inSight.append(p)
+            allBlocked = false
+          } else {
+            if (this.isInWorld(p) && !this.getTile(p).canSeeThrough) {
+              val newStartSlope = endSlope.cpy().set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
+              val newEndSlope = endSlope.cpy().set((p.x.toFloat - start.x+1)/(p.y.toFloat - start.y+1), 1)
+               
+              inSight.appendAll(decent1(p.asVector2.add(startSlope), newStartSlope, newEndSlope))
+
+            } else {
+              
+            }
+            if (allBlocked && x == scanEnd.x.toInt){
+              scala.util.control.Breaks.break
+            }
+          }
+        }
+        scanStart.add(startSlope)
+        scanEnd.add(endSlope)
+      }
+    }
+    
+    inSight.toSeq
   }
 }

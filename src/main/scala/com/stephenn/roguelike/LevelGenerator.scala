@@ -27,6 +27,21 @@ trait LevelGenerator {
       t
     }
   }
+  
+  def generateRandom = {
+    val grid = Array.fill(50,50) {
+      val t = new Tile
+      t.isGround = true
+      t
+    }
+    
+    for (y <- 0 to grid.length-1){
+      for (x <- 0 to grid(y).length-1){
+        grid(y)(x).isGround = (Random.nextInt(10) < 7)
+      }
+    }
+    grid
+  }
 
   def randomInt(n: Int) = Random.nextInt(n)
 
