@@ -156,11 +156,12 @@ trait WorldTrait {
   }
   
   def inLineOfSight3 = {
-    decent1(this.playerPos.asVector2, startSlope = new Vector2(-1, 1), endSlope = new Vector2(0,1))
+    decent1(this.playerPos.asVector2, endSlope = new Vector2(0,1))
   }
   
-  def decent1(start: Vector2, startSlope: Vector2, endSlope: Vector2): Seq[Point] = {
-    logger.debug("decent1 "+start+" " +startSlope+ " " +endSlope)
+  def decent1(start: Vector2, endSlope: Vector2): Seq[Point] = {
+    logger.debug("decent1 "+start+" " +endSlope)
+    val startSlope = new Vector2(-1,1)
     var scanStart = start.cpy
     var scanEnd = start.cpy
     
@@ -181,10 +182,9 @@ trait WorldTrait {
             allBlocked = false
           } else {
             if (this.isInWorld(p) && !this.getTile(p).canSeeThrough) {
-              val newStartSlope = endSlope.cpy().set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
-              val newEndSlope = endSlope.cpy().set((p.x.toFloat - start.x+1)/(p.y.toFloat - start.y+1), 1)
+              val newEndSlope = endSlope.cpy().set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
                
-              inSight.appendAll(decent1(p.asVector2.add(startSlope), newStartSlope, newEndSlope))
+              inSight.appendAll(decent1(p.asVector2.add(startSlope), newEndSlope))
 
             } else {
               
