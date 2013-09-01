@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.stephenn.roguelike.model._
 import com.badlogic.gdx.Gdx
 
-class WorldRenderer(world: World) {
+class WorldRenderer(world: WorldTrait) {
   
   val TILE_WIDTH = 1f
   
@@ -26,7 +26,7 @@ class WorldRenderer(world: World) {
     spriteBatch.setProjectionMatrix(cam.combined)
     spriteBatch.setColor(1, 1, 1, 1)
     
-    drawTiles(world)
+    drawTiles(world, world.currentlyInSight)
     
     spriteBatch.end
     
@@ -37,30 +37,22 @@ class WorldRenderer(world: World) {
     drawOutOfSight(world)
     
     spriteBatch.end
-    
-    
   }
   
-  def drawOutOfSight(world: World) {
+  def drawOutOfSight(world: WorldTrait) {
     val tiles = world.grid
     for (y <- 0 to tiles.length -1){
       for (x <- 0 to tiles(y).length -1) {
-        if (!world.currentlyInSight.contains(Point(x,y))) {
+        if (!world.currentlyInSight.contains(Point(x,y)) && world.haveSeen.contains(Point(x,y))) {
          drawOutOfSightTile(tiles(y)(x), x, y) 
         }
       }
     }
   }
   
-  def drawTiles(world: World) {
-    val tiles = world.grid
-    
-    for (y <- 0 to tiles.length -1){
-      for (x <- 0 to tiles(y).length -1) {
-        if (world.currentlyInSight.contains(Point(x,y))) {
-         drawTile(tiles(y)(x), x, y) 
-        }
-      }
+  def drawTiles(world: WorldTrait, points: Seq[Point]){
+    points.foreach { p =>
+      drawTile(world.getTile(p), p.x, p.y)
     }
   }
   

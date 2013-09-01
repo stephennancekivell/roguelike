@@ -32,10 +32,9 @@ class World extends WorldTrait{
     spawnEnemies
     player.endTurn
     currentlyInSight = inLineOfSight(playerPos.asVector2)
+    haveSeen ++= currentlyInSight
   }
   
-  var currentlyInSight = Seq[Point]()
-
   def playerUp = movePlayer(Point(0, 1))
   def playerDown = movePlayer(Point(0, -1))
   def playerRight = movePlayer(Point(1, 0))
@@ -60,7 +59,8 @@ class World extends WorldTrait{
 
   def reRender = {
     grid = LevelGenerator.generate
-    movePlayer(Point(0, 0))
+    playerPos = LevelGenerator.getPlayerStartLoc(grid).get
+    getTile(playerPos).player = Some(player)
   }
   
   def press2 {
@@ -81,6 +81,9 @@ trait WorldTrait {
   var time = 0l
   
   var npcs: Seq[NPC] 
+  
+  var currentlyInSight = Seq[Point]()
+  val haveSeen = Set[Point]()
   
   implicit val floatToInt = Util.floatToInt
   
@@ -159,8 +162,10 @@ trait WorldTrait {
       n.add(dv)
     }
   }
-  
-  def inLineOfSight3 = {
+}
+
+trait ShadowCastingWorld extends World {
+   def inLineOfSight3 = {
     decent1(this.playerPos.asVector2, endSlope = new Vector2(0,1))
   }
   
