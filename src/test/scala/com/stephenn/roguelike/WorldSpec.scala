@@ -35,7 +35,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
   implicit val floatToInt = Util.floatToInt
   
   describe("player movement") {
-    ignore("should stop the player moving where they cannot go") {
+    it("should stop the player moving where they cannot go") {
       val world = tinyWorld
       
       world.canMovePlayerTo(Point(0,0)) should equal(false)
@@ -43,7 +43,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       world.canMovePlayerTo(Point(0,0)) should equal(true)
     }
     
-    ignore("cant walk off the grid") {
+    it("cant walk off the grid") {
       val world = tinyWorldOfGround
       
       world.canMovePlayerTo(Point(-1,-1)) should equal(false)
@@ -54,7 +54,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
   }
   
   describe("helpers") {
-    ignore("should know where the end of the grid is") {
+    it("should know where the end of the grid is") {
       val world = tinyWorld
       
       world.isInWorld(Point(-1,-1)) should equal(false)
@@ -63,7 +63,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       world.isInWorld(Point(1,1)) should equal(true)
     }
     
-    ignore("should know what neighbouring vectors are") {
+    it("should know what neighbouring vectors are") {
       val n = tinyWorld.getNeighbouringVectors(new Vector2(5,5))
       
       n.map { v => (v.x.toInt, v.y.toInt) } should equal(Seq(
@@ -78,7 +78,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
           ))
     }
     
-    ignore("spawns new enemies") {
+    it("spawns new enemies") {
       val w = tinyWorldOfGround
       
       w.spawnEnemies
@@ -96,7 +96,35 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
   }
   
   describe("line of sight") {
+    it("can see everything in a empty room") {
+      val w = mkWorld(50, () => groundTile)
+      w.inLineOfSight(w.playerPos.asVector2).length should equal(2500)
+    }
     
+    it("cannot see in world of walls") {
+      val w = mkWorld(50, () => new Tile)
+      w.inLineOfSight(w.playerPos.asVector2).length should equal(0)
+    }
     
+    it("can see only in the little room") {
+      val w = mkWorld(10, () => new Tile)
+      w.playerPos = Point(5,5)
+      w.getTile(w.playerPos).isGround = true
+      w.getNeighbouringVectors(new Vector2(5,5)).foreach(w.getTile(_).isGround = true)
+      
+      w.inLineOfSight(w.playerPos.asVector2).toList.sortBy(_.y).sortBy(_.x) should equal(
+          List(Point(4,4), Point(4,5), Point(4,6), Point(5,4), Point(5,5), Point(5,6), Point(6,4), Point(6,5), Point(6,6))
+          )
+    }
+    
+    it("can see until the wall") {
+      val w = mkWorld(10, () => groundTile)
+      w.getTile(Point(5, 0)).isGround = false
+      
+      val set = scala.collection.mutable.Set[Point]()
+      w.inRay(Point(0,0).asVector2, new Vector2(1,0), set)
+      
+      set.toList.sortBy(_.x) should equal(List(Point(1,0), Point(2,0), Point(3,0), Point(4,0)))
+    }
   }
 }

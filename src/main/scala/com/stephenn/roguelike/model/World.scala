@@ -31,7 +31,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = inLineOfSight2(playerPos.asVector2)
+    currentlyInSight = inLineOfSight(playerPos.asVector2)
   }
   
   var currentlyInSight = Seq[Point]()
@@ -72,8 +72,7 @@ class World extends WorldTrait{
 
 trait WorldTrait {
   var grid = generateGrid
-//  def generateGrid = LevelGenerator.generate
-  def generateGrid = LevelGenerator.generateEmpty// .generateRandom
+  def generateGrid = LevelGenerator.generate
   
   def player: Player
   
@@ -134,7 +133,7 @@ trait WorldTrait {
   val logger = LoggerFactory.getLogger(classOf[World])
   
   var precision = 800
-  def inLineOfSight2(from: Vector2) = {
+  def inLineOfSight(from: Vector2) = {
     val vectors = (1 to precision + 1).map(x => {
       val v = Vector2.X.cpy()
       v.setAngle((360f / precision) * x)
@@ -143,21 +142,12 @@ trait WorldTrait {
     
     val set = Set[Point]()
 
+    // could par
     vectors.foreach { dv =>
       inRay(from, dv, set)
     }
     
     set.toSeq
-  }
-
-  def inRay(v: Vector2, dv: Vector2): Seq[Vector2] = {
-    val n = v.cpy().add(dv)
-
-    if (this.isInWorld(n) && this.getTile(n).canSeeThrough) {
-      Seq(n) ++ inRay(n, dv)
-    } else {
-      Seq()
-    }
   }
   
   def inRay(v: Vector2, dv: Vector2, set: Set[Point]) {
