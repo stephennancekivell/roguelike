@@ -20,20 +20,10 @@ trait LevelGenerator {
     grid
   }
 
-  def generateTiny = {
-    Array.fill(10, 10) {
-      val t = new Tile
-      t.isGround = true
-      t
-    }
-  }
+  def generateTiny = mkGrid(10, () => groundTile)
   
   def generateRandom = {
-    val grid = Array.fill(50,50) {
-      val t = new Tile
-      t.isGround = true
-      t
-    }
+    val grid = mkGrid(50, () => groundTile)
     
     for (y <- 0 to grid.length-1){
       for (x <- 0 to grid(y).length-1){
@@ -41,6 +31,18 @@ trait LevelGenerator {
       }
     }
     grid
+  }
+  
+  def generateEmpty = {
+    mkGrid(50, () => groundTile)
+  }
+  
+  def mkGrid(size:Int, mkTile:() => Tile) = Array.fill(size,size)(mkTile())
+  
+  def groundTile = {
+    val t = new Tile
+    t.isGround = true
+    t
   }
 
   def randomInt(n: Int) = Random.nextInt(n)

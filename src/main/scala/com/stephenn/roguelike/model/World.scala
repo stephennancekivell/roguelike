@@ -9,6 +9,7 @@ import com.stephenn.roguelike._
 import com.stephenn.roguelike.npc._
 import scala.collection.mutable.Buffer
 import scala.util.control.Breaks
+import scala.collection.mutable.Set
 
 class World extends WorldTrait{
   
@@ -30,7 +31,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = inLineOfSight3//(playerPos.asVector2) //inLineOfSightFrom(playerPos.asVector2)
+    currentlyInSight = inLineOfSight2(playerPos.asVector2)
   }
   
   var currentlyInSight = Seq[Point]()
@@ -63,7 +64,7 @@ class World extends WorldTrait{
   }
   
   def press2 {
-    this.precision += 1
+    this.precision -= 100
     Gdx.app.log("precision", ""+precision)
   
   }
@@ -72,7 +73,7 @@ class World extends WorldTrait{
 trait WorldTrait {
   var grid = generateGrid
 //  def generateGrid = LevelGenerator.generate
-  def generateGrid = LevelGenerator.generateRandom
+  def generateGrid = LevelGenerator.generateEmpty// .generateRandom
   
   def player: Player
   
@@ -132,17 +133,21 @@ trait WorldTrait {
   
   val logger = LoggerFactory.getLogger(classOf[World])
   
-  var precision = 120
+  var precision = 800
   def inLineOfSight2(from: Vector2) = {
     val vectors = (1 to precision + 1).map(x => {
       val v = Vector2.X.cpy()
       v.setAngle((360f / precision) * x)
       v
     })
+    
+    val set = Set[Point]()
 
-    vectors.map { dv =>
-      inRay(from, dv).map(Point.apply)
-    }.flatten
+    vectors.foreach { dv =>
+      inRay(from, dv, set)
+    }
+    
+    set.toSeq
   }
 
   def inRay(v: Vector2, dv: Vector2): Seq[Vector2] = {
@@ -155,11 +160,22 @@ trait WorldTrait {
     }
   }
   
+  def inRay(v: Vector2, dv: Vector2, set: Set[Point]) {
+    val n = v.cpy().add(dv)
+    
+    while(isInWorld(n) && getTile(n).canSeeThrough){
+      set.add(Point(n))
+      
+      n.add(dv)
+    }
+  }
+  
   def inLineOfSight3 = {
     decent1(this.playerPos.asVector2, endSlope = new Vector2(0,1))
   }
   
   def decent1(start: Vector2, endSlope: Vector2): Seq[Point] = {
+    //http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
     logger.debug("decent1 "+start+" " +endSlope)
     val startSlope = new Vector2(-1,1)
     var scanStart = start.cpy
@@ -182,6 +198,11 @@ trait WorldTrait {
             allBlocked = false
           } else {
             if (this.isInWorld(p) && !this.getTile(p).canSeeThrough) {
+//              if (p.x == scanStart.x.toInt){
+//                scanStart.x += 1
+//                startSlope.set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
+//              }
+              
               val newEndSlope = endSlope.cpy().set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
                
               inSight.appendAll(decent1(p.asVector2.add(startSlope), newEndSlope))

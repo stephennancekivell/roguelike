@@ -13,12 +13,11 @@ object WorldSpecHelpers extends WorldSpecHelpers
 trait WorldSpecHelpers {
   
   def mkWorld(size:Int, mkTile:() => Tile) = new WorldTrait {
-    override def generateGrid = Array.fill(size,size)(mkTile())
+    override def generateGrid = LevelGenerator.mkGrid(size, mkTile)
     var playerPos = Point(0,0)
     var npcs = Seq[NPC]()
     val player = new Player(this)
   }
-  
   
   def groundTile = {
     val t = new Tile
@@ -27,22 +26,9 @@ trait WorldSpecHelpers {
   }
   
   def tinyWorld = mkWorld(2, () => new Tile)
-  
-//  def tinyWorld = new WorldTrait {
-//    override def generateGrid = Array.fill(2,2)(new Tile)
-//    var playerPos = Point(0,0)
-//    var npcs = Seq[NPC]()
-//    val player = new Player(this)
-//  }
-  
+    
   def tinyWorldOfGround = mkWorld(2, () => groundTile)
   
-//  def tinyWorldOfGround = new WorldTrait {
-//    override def generateGrid = Array.fill(2,2)(groundTile)
-//    var playerPos = Point(0,0)
-//    var npcs = Seq[NPC]()
-//    val player = new Player(this)
-//  }
 }
 
 class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
