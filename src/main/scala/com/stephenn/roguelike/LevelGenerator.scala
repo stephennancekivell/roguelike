@@ -123,6 +123,17 @@ trait LevelGenerator {
       new String(chars)
     }.reverse.mkString("\n")
   }
+  
+  def gridFromString(in: Array[String]) = {
+    in.map { col =>
+      col.map { t =>
+        t match {
+          case '.' | '@' => groundTile
+          case _ => new Tile
+        }
+      }.toArray
+    }.reverse
+  }
 
   implicit def intFromFloat(f: Float) = f.toInt
 

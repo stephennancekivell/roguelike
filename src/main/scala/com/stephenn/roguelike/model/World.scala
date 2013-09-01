@@ -64,9 +64,9 @@ class World extends WorldTrait{
   }
   
   def press2 {
-    this.precision -= 100
-    Gdx.app.log("precision", ""+precision)
-  
+    logger.debug("playerPos "+ this.playerPos)
+    logger.debug("currentlyInSight " + Point.sort(this.currentlyInSight))
+    logger.debug("map "+ LevelGenerator.gridToString(grid))
   }
 }
 
@@ -134,6 +134,7 @@ trait WorldTrait {
   
   var precision = 800
   def inLineOfSight(from: Vector2) = {
+    val centered = from.cpy.add(new Vector2(0.5f, 0.5f)) // center line of sight from middle of tile.
     val vectors = (1 to precision + 1).map(x => {
       val v = Vector2.X.cpy()
       v.setAngle((360f / precision) * x)
@@ -142,16 +143,15 @@ trait WorldTrait {
     
     val set = Set[Point]()
 
-    // could par
     vectors.foreach { dv =>
-      inRay(from, dv, set)
+      inRay(centered, dv, set)
     }
     
     set.toSeq
   }
   
   def inRay(v: Vector2, dv: Vector2, set: Set[Point]) {
-    val n = v.cpy().add(dv)
+    val n = v.cpy()
     
     while(isInWorld(n) && getTile(n).canSeeThrough){
       set.add(Point(n))

@@ -16,4 +16,6 @@ object Point {
   def apply(v: Vector2) = {
     new Point(v.x.toInt, v.y.toInt)
   }
+  
+  def sort(in: Seq[Point]) = in.toList.sortBy(_.x).sortBy(_.y)
 }
