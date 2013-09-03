@@ -18,13 +18,13 @@ class World extends WorldTrait{
   var playerPos = LevelGenerator.getPlayerStartLoc(grid).get
   getTile(playerPos).player = Some(player)
   
-  var npcs: Seq[NPC] = Seq()
-  
-  npcs = newNpcs 
+  npcs = newNpcs
   
   def newNpcs = {
     Seq(newEnemyAtRandom, newEnemyAtRandom, newEnemyAtRandom).flatten
   }
+  
+  updateLineOfSight
 
   def endPlayerTurn {
     time += 1
@@ -32,8 +32,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = RayTracer.inLineOfSight(playerPos.asVector2, this)
-    haveSeen ++= currentlyInSight
+    updateLineOfSight
   }
   
   def playerUp = movePlayer(Point(0, 1))
@@ -57,8 +56,13 @@ class World extends WorldTrait{
       false
     }
   }
+  
+  def updateLineOfSight {
+    currentlyInSight = RayTracer.inLineOfSight(playerPos.asVector2, this)
+    haveSeen ++= currentlyInSight
+  }
 
-  def reRender = {
+  def reRender = { //debug code
     grid = LevelGenerator.generate
     playerPos = LevelGenerator.getPlayerStartLoc(grid).get
     getTile(playerPos).player = Some(player)
@@ -79,7 +83,7 @@ trait WorldTrait {
   
   var playerPos: Point
   
-  var npcs: Seq[NPC]
+  var npcs: Seq[NPC] = Seq()
   
   var time = 0l
   

@@ -14,7 +14,6 @@ trait WorldSpecHelpers {
   def mkWorld(size:Int, mkTile:() => Tile) = new WorldTrait {
     override def generateGrid = LevelGenerator.mkGrid(size, mkTile)
     var playerPos = Point(0,0)
-    var npcs = Seq[NPC]()
     val player = new Player(this)
   }
   

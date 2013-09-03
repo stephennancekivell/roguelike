@@ -8,14 +8,7 @@ import com.badlogic.gdx.math.Vector2
 
 class NPCSpec extends FunSpec with ShouldMatchers  {
   
-  def tinyWorld = new WorldTrait {
-    override def generateGrid = Array.fill(9,9)(Tile(isGround = true))
-    var playerPos = Point(0,0)
-    var npcs = Seq[NPC]()
-    val player = new Player(this)
-  }
-  
-  def npc(worldIn: WorldTrait = tinyWorld) = new NPC {
+  def npc(worldIn: WorldTrait = WorldSpecHelpers.tinyWorld) = new NPC {
     println("startof newNPC")
     val world = worldIn
     
