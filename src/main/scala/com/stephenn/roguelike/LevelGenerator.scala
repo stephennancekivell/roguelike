@@ -20,10 +20,10 @@ trait LevelGenerator {
     grid
   }
 
-  def generateTiny = mkGrid(10, () => groundTile)
+  def generateTiny = mkGrid(10, () => Tile(isGround = true))
   
   def generateRandom = {
-    val grid = mkGrid(50, () => groundTile)
+    val grid = mkGrid(50, () => Tile(isGround = true))
     
     for (y <- 0 to grid.length-1){
       for (x <- 0 to grid(y).length-1){
@@ -34,17 +34,11 @@ trait LevelGenerator {
   }
   
   def generateEmpty = {
-    mkGrid(50, () => groundTile)
+    mkGrid(50, () => Tile(isGround = true))
   }
   
   def mkGrid(size:Int, mkTile:() => Tile) = Array.fill(size,size)(mkTile())
   
-  def groundTile = {
-    val t = new Tile
-    t.isGround = true
-    t
-  }
-
   def randomInt(n: Int) = Random.nextInt(n)
 
   val roomMaxHeightWidth = 10
@@ -128,7 +122,7 @@ trait LevelGenerator {
     in.map { col =>
       col.map { t =>
         t match {
-          case '.' | '@' => groundTile
+          case '.' | '@' => Tile(isGround = true)
           case _ => new Tile
         }
       }.toArray

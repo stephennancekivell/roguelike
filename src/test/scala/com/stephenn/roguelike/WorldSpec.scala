@@ -19,15 +19,9 @@ trait WorldSpecHelpers {
     val player = new Player(this)
   }
   
-  def groundTile = {
-    val t = new Tile
-    t.isGround = true
-    t
-  }
-  
   def tinyWorld = mkWorld(2, () => new Tile)
     
-  def tinyWorldOfGround = mkWorld(2, () => groundTile)
+  def tinyWorldOfGround = mkWorld(2, () => Tile(isGround=true))
   
 }
 
@@ -97,7 +91,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
   
   describe("line of sight") {
     it("can see everything in a empty room") {
-      val w = mkWorld(50, () => groundTile)
+      val w = mkWorld(50, () => Tile(isGround = true))
       w.inLineOfSight(w.playerPos.asVector2).length should equal(2500)
     }
     
@@ -119,7 +113,7 @@ class WorldSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
     }
     
     it("can see until the wall") {
-      val w = mkWorld(10, () => groundTile)
+      val w = mkWorld(10, () => Tile(isGround = true))
       w.getTile(Point(5, 0)).isGround = false
       
       val set = scala.collection.mutable.Set[Point]()
