@@ -10,6 +10,7 @@ import com.stephenn.roguelike.npc._
 import scala.collection.mutable.Buffer
 import scala.util.control.Breaks
 import scala.collection.mutable.Set
+import com.stephenn.roguelike.RayTracer
 
 class World extends WorldTrait{
   
@@ -31,7 +32,7 @@ class World extends WorldTrait{
     npcs.foreach(_.turn)
     spawnEnemies
     player.endTurn
-    currentlyInSight = inLineOfSight(playerPos.asVector2)
+    currentlyInSight = RayTracer.inLineOfSight(playerPos.asVector2, this)
     haveSeen ++= currentlyInSight
   }
   
@@ -78,14 +79,33 @@ trait WorldTrait {
   
   var playerPos: Point
   
+  var npcs: Seq[NPC]
+  
   var time = 0l
   
-  var npcs: Seq[NPC] 
-  
   var currentlyInSight = Seq[Point]()
-  val haveSeen = Set[Point]()
+  
+  val haveSeen = Set[Point]() // at least once
+  
+  val logger = LoggerFactory.getLogger(classOf[World])
   
   implicit val floatToInt = Util.floatToInt
+  
+  
+  
+  //---------------
+  // Enemy spawning
+  
+  def newEnemyAtRandom = LevelGenerator.getRandomWalkable(grid).headOption.map(new Enemy(this, _))
+  
+  def spawnEnemies {
+    if (time % 20 == 0){
+      newEnemyAtRandom
+    }
+  }
+  
+  //--------
+  // Helpers
   
   def isInWorld(p: Point) = {
     p.x >= 0 &&
@@ -124,97 +144,4 @@ trait WorldTrait {
   def neighbouringVectorsInWorld(from: Vector2) = getNeighbouringVectors(from).filter(isInWorld)
   
   def nextToPlayer(v: Vector2) = neighbouringVectorsInWorld(v).filter(_.equals(playerPos.asVector2)).length > 0
-  
-  def newEnemyAtRandom = LevelGenerator.getRandomWalkable(grid).headOption.map(new Enemy(this, _))
-  
-  def spawnEnemies {
-    if (time % 20 == 0){
-      newEnemyAtRandom
-    }
-  }
-  
-  val logger = LoggerFactory.getLogger(classOf[World])
-  
-  var precision = 800
-  def inLineOfSight(from: Vector2) = {
-    val centered = from.cpy.add(new Vector2(0.5f, 0.5f)) // center line of sight from middle of tile.
-    val vectors = (1 to precision + 1).map(x => {
-      val v = Vector2.X.cpy()
-      v.setAngle((360f / precision) * x)
-      v
-    })
-    
-    val set = Set[Point]()
-
-    vectors.foreach { dv =>
-      inRay(centered, dv, set)
-    }
-    
-    set.toSeq
-  }
-  
-  def inRay(v: Vector2, dv: Vector2, set: Set[Point]) {
-    val n = v.cpy()
-    
-    while(isInWorld(n) && getTile(n).canSeeThrough){
-      set.add(Point(n))
-      
-      n.add(dv)
-    }
-  }
-}
-
-trait ShadowCastingWorld extends World {
-   def inLineOfSight3 = {
-    decent1(this.playerPos.asVector2, endSlope = new Vector2(0,1))
-  }
-  
-  def decent1(start: Vector2, endSlope: Vector2): Seq[Point] = {
-    //http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
-    logger.debug("decent1 "+start+" " +endSlope)
-    val startSlope = new Vector2(-1,1)
-    var scanStart = start.cpy
-    var scanEnd = start.cpy
-    
-    val inSight = Buffer[Point]()
-    
-    scala.util.control.Breaks.breakable {
-      while (true) {
-        logger.debug("" + scanStart)
-        val y = scanStart.y.toInt
-        for (x <- scanStart.x.toInt to scanEnd.x.toInt) {
-          val p = Point(x, y)
-          logger.debug("p" + p)
-          
-          var allBlocked = true
-
-          if (this.isInWorld(p) && this.getTile(p).canSeeThrough) {
-            inSight.append(p)
-            allBlocked = false
-          } else {
-            if (this.isInWorld(p) && !this.getTile(p).canSeeThrough) {
-//              if (p.x == scanStart.x.toInt){
-//                scanStart.x += 1
-//                startSlope.set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
-//              }
-              
-              val newEndSlope = endSlope.cpy().set((p.x.toFloat - start.x)/(p.y.toFloat - start.y), 1)
-               
-              inSight.appendAll(decent1(p.asVector2.add(startSlope), newEndSlope))
-
-            } else {
-              
-            }
-            if (allBlocked && x == scanEnd.x.toInt){
-              scala.util.control.Breaks.break
-            }
-          }
-        }
-        scanStart.add(startSlope)
-        scanEnd.add(endSlope)
-      }
-    }
-    
-    inSight.toSeq
-  }
 }
