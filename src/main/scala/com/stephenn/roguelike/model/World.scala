@@ -57,6 +57,16 @@ class World extends WorldTrait{
     }
   }
   
+  def pickup {
+    getTile(playerPos).items.headOption match {
+      case Some(item) => {
+        getTile(playerPos).items = getTile(playerPos).items.tail
+        player.items = player.items ++ Seq(item)
+      }
+      case _ => {}
+    }
+  }
+  
   def updateLineOfSight {
     currentlyInSight = RayTracer.inLineOfSight(playerPos.asVector2, this)
     haveSeen ++= currentlyInSight

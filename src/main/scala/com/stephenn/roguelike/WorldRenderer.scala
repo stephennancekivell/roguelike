@@ -71,6 +71,8 @@ class WorldRenderer(world: WorldTrait) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
     } else if (t.npc.isDefined){
       spriteBatch.draw(spriteCache.bee, x, y, 1, 1)
+    } else if (t.items.length > 0) {
+      spriteBatch.draw(spriteCache.orange, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
     } else {

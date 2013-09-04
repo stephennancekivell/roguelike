@@ -49,6 +49,7 @@ class GameScreen extends Screen with InputProcessor {
       case Keys.DOWN => world.playerDown
       case Keys.LEFT => world.playerLeft
       case Keys.RIGHT => world.playerRight
+      case Keys.P => world.pickup
       case Keys.ESCAPE => Gdx.app.exit()
       case Keys.NUM_1 => world.reRender
       case Keys.NUM_2 => world.press2

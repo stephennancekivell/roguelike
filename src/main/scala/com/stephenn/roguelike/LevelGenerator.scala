@@ -4,6 +4,7 @@ import scala.util.Random
 import com.badlogic.gdx.math.Rectangle
 import com.stephenn.roguelike.model.Tile
 import com.badlogic.gdx.math.Vector2
+import com.stephenn.roguelike.item.ItemPlacer
 
 object LevelGenerator extends LevelGenerator
 
@@ -16,6 +17,8 @@ trait LevelGenerator {
     val grid = makeGridFromRooms(rooms, max, max)
     
     connect(rooms, grid)
+    
+    ItemPlacer.placeRandom(grid)
     
     grid
   }

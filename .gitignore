@@ -4,3 +4,4 @@ target/
 .cache
 **/worksheet.sc
 .worksheet/
+src/main/resources/rebel.xml

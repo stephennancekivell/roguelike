@@ -20,8 +20,9 @@ class OverlayRenderer(world: World) {
     spriteBatch.end
   }
   
-  def drawStats(world: World) {    
-    font.draw(spriteBatch, "T: "+world.time, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -50)
+  def drawStats(world: World) {
     font.draw(spriteBatch, "HP: "+world.player.hp, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -30)
+    font.draw(spriteBatch, "T: "+world.time, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -50)
+    font.draw(spriteBatch, "N: "+world.player.nutrition, (Gdx.graphics.getWidth()/2) -50, (Gdx.graphics.getHeight()/2) -70)
   }
 }

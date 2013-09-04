@@ -17,23 +17,37 @@ black
   orig: 32, 32
   offset: 0, 0
   index: -1
-fly
+dog
   rotate: false
   xy: 69, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-wall
+fly
   rotate: false
   xy: 103, 1
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-ground1
+orange
   rotate: false
   xy: 137, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+wall
+  rotate: false
+  xy: 171, 1
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+ground1
+  rotate: false
+  xy: 205, 1
   size: 31, 32
   orig: 31, 32
   offset: 0, 0
