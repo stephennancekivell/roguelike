@@ -6,7 +6,7 @@ import scala.collection.mutable.Set
 import scala.collection.mutable.Buffer
 
 object RayTracer {
-  val precision = 800
+  val precision = 10000
   def inLineOfSight(from: Vector2, world: WorldTrait) = {
     val centered = from.cpy.add(new Vector2(0.5f, 0.5f)) // center line of sight from middle of tile.
     val vectors = (1 to precision + 1).map(x => {

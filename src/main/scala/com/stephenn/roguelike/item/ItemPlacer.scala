@@ -16,12 +16,11 @@ trait ItemPlacer {
   }
   
   def placeItemOnRandomTile(item: Item, grid:Array[Array[Tile]]){
-    val y = randomInt(grid.length)
-    val x = randomInt(grid(y).length)
+    val groundTiles = grid.toList.map(_.toList).flatten.filter(_.isGround)
     
-    val tile = grid(y)(x)
-    
-    if (tile.isWalkable)
-    	tile.items = grid(y)(x).items ++ Seq(item)
+    if (groundTiles.length > 0){
+      val tile = groundTiles(randomInt(groundTiles.length))
+      tile.items = tile.items ++ Seq(item)
+    }	
   }
 }
