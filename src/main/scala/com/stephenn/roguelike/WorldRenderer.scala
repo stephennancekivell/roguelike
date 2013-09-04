@@ -32,7 +32,7 @@ class WorldRenderer(world: WorldTrait) {
     
     spriteBatch.begin
     spriteBatch.setProjectionMatrix(cam.combined)
-    spriteBatch.setColor(1, 1.5f, 1, 1)
+    spriteBatch.setColor(1, 1f, 1f, 0.3f)
     
     drawOutOfSight(world)
     
@@ -61,6 +61,8 @@ class WorldRenderer(world: WorldTrait) {
       spriteBatch.draw(spriteCache.fly, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
+    } else {
+      spriteBatch.draw(spriteCache.wall, x, y, 1, 1)
     }
   }
   
@@ -71,6 +73,8 @@ class WorldRenderer(world: WorldTrait) {
       spriteBatch.draw(spriteCache.bee, x, y, 1, 1)
     } else if (t.isGround) {
       spriteBatch.draw(spriteCache.ground1, x, y, 1, 1)
+    } else {
+      spriteBatch.draw(spriteCache.wall, x, y, 1, 1)
     }
   }
   

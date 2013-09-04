@@ -8,8 +8,7 @@ import com.badlogic.gdx.math.Vector2
 
 class NPCSpec extends FunSpec with ShouldMatchers  {
   
-  def npc(worldIn: WorldTrait = WorldSpecHelpers.tinyWorld) = new NPC {
-    println("startof newNPC")
+  def npc(worldIn: WorldTrait = WorldSpecHelpers.mkWorld(9, () => Tile(isGround=true))) = new NPC {
     val world = worldIn
     
     var location = Point(0,0)

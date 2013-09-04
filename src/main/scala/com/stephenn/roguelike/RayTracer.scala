@@ -32,6 +32,9 @@ object RayTracer {
       
       n.add(dv)
     }
+    if (world.isInWorld(n)){
+      set.add(Point(n))
+    }
   }
 }
 

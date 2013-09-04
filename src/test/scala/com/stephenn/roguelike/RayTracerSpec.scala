@@ -15,7 +15,7 @@ class RayTracerSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
     
     it("cannot see in world of walls") {
       val w = mkWorld(50, () => new Tile)
-      RayTracer.inLineOfSight(w.playerPos.asVector2, w).length should equal(0)
+      RayTracer.inLineOfSight(w.playerPos.asVector2, w).length should equal(1)
     }
     
     it("can see only in the little room") {
@@ -26,7 +26,9 @@ class RayTracerSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       
       val points = RayTracer.inLineOfSight(w.playerPos.asVector2, w)
       Point.sort(points) should equal(
-          List(Point(4,4), Point(5,4), Point(6,4), Point(4,5), Point(5,5), Point(6,5), Point(4,6), Point(5,6), Point(6,6))
+          List(Point(3,3), Point(4,3), Point(5,3), Point(6,3), Point(7,3), Point(3,4), Point(4,4), Point(5,4), Point(6,4),
+              Point(7,4), Point(3,5), Point(4,5), Point(5,5), Point(6,5), Point(7,5), Point(3,6), Point(4,6), Point(5,6),
+              Point(6,6), Point(7,6), Point(3,7), Point(4,7), Point(5,7), Point(6,7), Point(7,7))
           )
     }
     
@@ -36,8 +38,8 @@ class RayTracerSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       
       val set = scala.collection.mutable.Set[Point]()
       RayTracer.inRay(Point(0,0).asVector2, new Vector2(1,0), set, w)
-      
-      set.toList.sortBy(_.x) should equal(List(Point(0,0), Point(1,0), Point(2,0), Point(3,0), Point(4,0)))
+
+      set.toList.sortBy(_.x) should equal(List(Point(0,0), Point(1,0), Point(2,0), Point(3,0), Point(4,0), Point(5,0)))
     }
     
     it("can see from end of hallway") {
@@ -58,7 +60,7 @@ class RayTracerSpec extends FunSpec with ShouldMatchers with WorldSpecHelpers {
       
       val points = RayTracer.inLineOfSight(new Vector2(2f,0f), w)
       Point.sort(points) should equal(
-          List(Point(2,0), Point(0,1), Point(1,1), Point(2,1), Point(3,1), Point(4,1), Point(0,2), Point(1,2), Point(2,2), Point(3,2), Point(4,2))
+          List(Point(1,0), Point(2,0), Point(3,0), Point(0,1), Point(1,1), Point(2,1), Point(3,1), Point(4,1), Point(0,2), Point(1,2), Point(2,2), Point(3,2), Point(4,2))
           )
     }
   }
