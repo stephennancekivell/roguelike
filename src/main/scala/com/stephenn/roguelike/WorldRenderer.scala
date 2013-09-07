@@ -80,8 +80,8 @@ class WorldRenderer(world: WorldTrait) {
     }
   }
   
-  def zoomIn = zoom(0.4f)
-  def zoomOut = zoom(-0.4f)
+  def zoomIn = zoom(-0.4f)
+  def zoomOut = zoom(0.4f)
   
   def zoom(mod: Float) {
     cam.zoom += mod
